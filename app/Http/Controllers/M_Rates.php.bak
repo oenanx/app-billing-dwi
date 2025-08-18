@@ -1,0 +1,545 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Mod_Company;
+use App\Models\Mod_Rates;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\ParameterBag;
+
+class M_Rates extends Controller
+{
+    public function index(Request $request)
+    {
+		if(Session::get('userid'))
+		{
+			//jika memang session sudah terdaftar
+			$username = Session::get('username');
+
+            $ratestype = DB::select('select id, ratetype from master_ratestype ORDER BY id;');
+
+            $nonstd = DB::select('select id, basedon from master_non_std_basedon ORDER BY id;');
+
+            $product = DB::select('select id, product from master_product_paket ORDER BY id;');
+
+			if ($request->ajax()) 
+			{
+                dataTableGeneralSearch($request, function($search) {
+                    return [
+                        'filter' => [
+                            'general_search' => $search
+                        ]
+                    ];
+                });
+
+				$data = QueryBuilder::for(Mod_Company::class) 
+						->where('master_company.customerno', '!=', "")
+						//->join('master_paket_customer', 'master_paket_customer.customerno', '=', 'master_company.customerno')
+						->join('master_rates', 'master_rates.customerno', '=', 'master_company.customerno')	
+						//->join('master_product_paket', 'master_product_paket.id', '=', 'master_rates.product_paket_id') 
+						->join('master_ratestype', 'master_ratestype.id', '=', 'master_rates.ratestypeid')	
+						->select('master_rates.id','master_company.customerno','company_name','master_rates.rates','product_paket_id','ratestypeid','non_std_basedon','non_std_basedon_wa',DB::raw('(CASE WHEN product_paket_id < 5 THEN (SELECT product FROM master_product_paket WHERE master_product_paket.id = product_paket_id) ELSE (SELECT nama_paket FROM master_paket WHERE master_paket.id = product_paket_id) END) as product_paket'), DB::raw('master_ratestype.ratetype as ratetype'),'master_rates.fstatus', DB::raw('(CASE WHEN master_rates.fstatus = 1 THEN "ACTIVED" ELSE "INACTIVED" END) as status_name'))
+						->orderBy('master_company.customerno','DESC')
+						->allowedFilters(
+							AllowedFilter::scope('general_search')
+						)
+						->paginate($request->query('perpage', 10))
+						->appends(request()->query());
+
+                return response()->paginator($data);
+			}
+			
+			return view('home.master_rates.rates', compact('ratestype','nonstd','product'));
+			//return view('home.master_rates.rates');
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+			DB::disconnect('mysql_2');
+			DB::disconnect('mysql_3');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+	
+	public function cariCompany(Request $request, $id)
+	{
+		$data = DB::table('master_company')
+                ->where('active', 1)
+                ->where('customerno', '!=', "")
+                ->where('company_name', $id)
+                ->leftJoin('master_rates', 'master_rates.customerno', '=', 'master_company.customerno')
+                ->select('master_rates.id','rates','master_rates.customerno','company_name')
+                ->first();
+		//dd($data);
+		
+		return response()->json($data);
+	}
+
+    public function autoSearch(Request $request)
+    {
+        $query = $request->get('query');
+		  
+        $filterResult = DB::table('master_company')->where('active', 1)->where('customerno', '!=', "")->where('company_name', 'LIKE', '%'.$query.'%')->select('company_name')->get();
+		//dd($data);
+
+        $data = array();
+
+        foreach ($filterResult as $hsl)
+        {
+            $data[] = $hsl->company_name;
+        }
+
+        return response()->json($data);
+    } 
+
+	/*
+    public function creates(Request $request, $id)
+	{
+		if(Session::get('userid'))
+		{
+			//dd($id);
+			$storage  = DB::table('master_storage')
+                        ->where('master_company.customerno', $id)
+                        ->join('master_company', 'master_company.sized', '=', 'master_storage.size')	
+						->select('price')
+						->first();
+
+			$sender  = DB::table('master_sender_no')
+                        ->where('master_company.customerno', $id)
+                        ->join('master_company', 'master_company.id', '=', 'master_sender_no.company_id')	
+						->select('senderno')
+						->get();
+
+			$concurrent  = DB::table('master_user')
+                        ->where('master_company.customerno', $id)
+                        ->join('master_account', 'master_account.id', '=', 'master_user.account_id')	
+                        ->join('master_company', 'master_company.id', '=', 'master_user.company_id')	
+						->select('concurrent')
+						->first();
+
+            $billcycle = DB::table('master_billcycle')
+						->select('billcycleid','billcycle')
+						->orderBy('billcycleid','ASC')
+						->get();
+
+            $company = DB::table('master_company')
+                        ->where('master_company.customerno', $id)
+						->select('id','customerno','company_name')
+						->first();
+			//dd($storage);
+
+	        return view('home.master_rates.create', compact('storage','sender','concurrent','billcycle','company'));
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+    }
+	
+	public function InsRates(Request $request)
+	{
+		if(Session::get('userid'))
+		{
+	        $company_id			    = $request->company_id; 
+	        $manage_service_price   = $request->manage_service_price;
+	        $number_price			= $request->number_price;
+	        $concurrent_price		= $request->concurrent_price;
+			$storage_price			= $request->storage_price;
+
+			$pstnbillcycleid		= $request->pstnbillcycleid;
+            $pstn_price			    = $request->pstn_price;
+			$gsmbillcycleid			= $request->gsmbillcycleid;
+			$gsm_price		        = $request->gsm_price;
+			
+	        $fstatus 			    = 1;
+	        $create_by 			    = $request->create_by;
+	        $create_at 			    = date('Y-m-d H:i:s');
+
+			//table customer_rates
+			//id,company_id,manage_service_price,number_price,concurrent_price,storage_price,fstatus,create_by,create_at,update_by,update_at
+			
+			$id3 = DB::table('customer_rates')->insertGetId(
+				[
+					'company_id'			=> $company_id,
+					'manage_service_price'	=> $manage_service_price,
+					'number_price'			=> $number_price,
+					'concurrent_price'		=> $concurrent_price,
+					'storage_price'			=> $storage_price,
+					'fstatus'				=> $fstatus,
+					'create_by'				=> $create_by,
+					'create_at'				=> $create_at
+				]
+			);
+			
+			//table customer_rates_detail
+			//id,customer_rates_id,price,sender_type,billcycleid,fstatus,create_by,create_at,update_by,update_at
+			
+			if ($pstnbillcycleid !== "")
+			{
+				DB::table('customer_rates_detail')->insert(
+					[
+						'customer_rates_id'	=> $id3,
+						'price'				=> $pstn_price,
+						'sender_type'		=> 0,
+						'billcycleid'		=> $pstnbillcycleid,
+						'fstatus'			=> $fstatus,
+						'create_by'			=> $create_by,
+						'create_at'			=> $create_at
+					]
+				);
+			}
+			
+			if ($gsmbillcycleid !== "")
+			{
+				DB::table('customer_rates_detail')->insert(
+					[
+						'customer_rates_id'	=> $id3,
+						'price'				=> $gsm_price,
+						'sender_type'		=> 1,
+						'billcycleid'		=> $gsmbillcycleid,
+						'fstatus'			=> $fstatus,
+						'create_by'			=> $create_by,
+						'create_at'			=> $create_at
+					]
+				);
+			}
+
+			//return back()->with('success','Rates Customer were saved successfully.');
+			return response()->json(['success' => 'Rates Customer were saved successfully.']);
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+	*/
+
+	public function delete_rates($id)
+	{
+		if(Session::get('userid'))
+		{
+	    	DB::table('master_rates')->where('id',$id)->delete();    
+
+	    	DB::connection('mysql_3')->table('master_rates')->where('id',$id)->delete();    
+
+	        return back()
+	        		->with('success','Data Rates was deleted successfully.');
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+			DB::disconnect('mysql_2');
+			DB::disconnect('mysql_3');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+    }
+
+	public function view_rates($id)
+    {
+        if(Session::get('userid'))
+        {
+			//dd($id);
+			$data = QueryBuilder::for(Mod_Company::class) //DB::table('customer_rates')
+					->where('master_company.customerno', $id)
+					->join('master_paket_customer', 'master_paket_customer.customerno', '=', 'master_company.customerno')
+					->join('master_rates', 'master_rates.customerno', '=', 'master_company.customerno')	
+					//->join('master_product_paket', 'master_product_paket.id', '=', 'master_rates.product_paket_id') 
+					->join('master_ratestype', 'master_ratestype.id', '=', 'master_rates.ratestypeid')	
+					->select('master_company.id','master_company.customerno','company_name','master_rates.rates','master_rates.product_paket_id','ratestypeid','non_std_basedon', DB::raw('(CASE WHEN non_std_basedon = 0 THEN "No" WHEN non_std_basedon = 1 THEN "Yes" END) as hp_live'),'non_std_basedon_wa', DB::raw('(CASE WHEN non_std_basedon_wa = 0 THEN "No" WHEN non_std_basedon_wa = 1 THEN "Yes" END) as wa_live'),DB::raw('(CASE WHEN master_rates.product_paket_id < 5 THEN (SELECT product FROM master_product_paket WHERE master_product_paket.id = master_rates.product_paket_id) ELSE (SELECT nama_paket FROM master_paket WHERE master_paket.id = master_rates.product_paket_id) END) as product_paket'), DB::raw('master_ratestype.ratetype as ratetypes'),'master_rates.rates_hp', 'master_rates.rates_wa', 'master_rates.fstatus', DB::raw('(CASE WHEN master_rates.fstatus = 1 THEN "ACTIVED" ELSE "INACTIVED" END) as status_name'))
+					->first();
+			//dd($data);
+			return response()->json($data);
+        }
+        else
+        {
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+			DB::disconnect('mysql_2');
+			DB::disconnect('mysql_3');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+    }
+
+	public function update_rates(Request $request)
+	{
+		if(Session::get('userid'))
+        {
+			//dd($request);
+			$editid     		= $request->id2;
+			$customerno			= $request->customerno2;
+			$updated_at			= date('Y-m-d H:i:s');
+			//dd($editid);
+
+			$data1	= DB::table('master_rates')->where('customerno', $customerno)->first();
+			//foreach ($data1 as $res1)
+			//{
+				//$custno = $res1->customerno;
+			//}
+			//dd($data1);
+			
+			$product_paket_id	= $request->prodpaketid2;
+	        $ratestypeid		= $request->rates_type2;
+	        $non_std_basedon	= $request->basedon2;
+			$non_std_basedon_wa	= $request->basedon22;
+			$rates				= $request->price2;
+	        $rates_hp			= $request->rates_hp2;
+	        $rates_wa			= $request->rates_wa2;
+	        $fstatus			= $request->fstatus2;
+
+			if(!empty($data1) || $data1 != null)
+			{
+				DB::table('master_rates')
+					->where('master_rates.customerno', $customerno)
+					->update(
+						[
+							'master_rates.ratestypeid'			=> $ratestypeid,
+							'master_rates.non_std_basedon'		=> $non_std_basedon,
+							'master_rates.non_std_basedon_wa'	=> $non_std_basedon_wa,
+							'master_rates.rates' 				=> $rates,
+							'master_rates.rates_hp'				=> $rates_hp,
+							'master_rates.rates_wa'				=> $rates_wa,
+							'master_rates.fstatus' 				=> $fstatus,
+							'master_rates.updated_at'			=> $updated_at
+						]);
+
+				DB::connection('mysql_3')->table('master_rates')
+					->where('master_rates.customerno', $customerno)
+					->update(
+						[
+							'master_rates.ratestypeid'			=> $ratestypeid,
+							'master_rates.non_std_basedon'		=> $non_std_basedon,
+							'master_rates.non_std_basedon_wa'	=> $non_std_basedon_wa,
+							'master_rates.rates' 				=> $rates,
+							'master_rates.rates_hp'				=> $rates_hp,
+							'master_rates.rates_wa'				=> $rates_wa,
+							'master_rates.fstatus' 				=> $fstatus,
+							'master_rates.updated_at'			=> $updated_at
+						]);
+			}
+			else
+			{
+				DB::table('master_rates')->insert(
+					[
+						'customerno'			=> $customerno,
+						'product_paket_id'		=> $product_paket_id,
+						'ratestypeid'			=> $ratestypeid,
+						'non_std_basedon'		=> $non_std_basedon,
+						'non_std_basedon_wa'	=> $non_std_basedon_wa,
+						'rates'					=> $rates,
+						'rates_hp'				=> $rates_hp,
+						'rates_wa'				=> $rates_wa,
+						'fstatus'				=> 1,
+						'created_at'			=> $updated_at
+					]
+				);
+
+				DB::connection('mysql_3')->table('master_rates')->insert(
+					[
+						'customerno'			=> $customerno,
+						'product_paket_id'		=> $product_paket_id,
+						'ratestypeid'			=> $ratestypeid,
+						'non_std_basedon'		=> $non_std_basedon,
+						'non_std_basedon_wa'	=> $non_std_basedon_wa,
+						'rates'					=> $rates,
+						'rates_hp'				=> $rates_hp,
+						'rates_wa'				=> $rates_wa,
+						'fstatus'				=> 1,
+						'created_at'			=> $updated_at
+					]
+				);
+			}
+
+			return back()
+				->with('success','Master Rates was updated successfully.');				
+		}
+		else
+		{
+            //jika session belum terdaftar, maka redirect ke halaman login
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+}

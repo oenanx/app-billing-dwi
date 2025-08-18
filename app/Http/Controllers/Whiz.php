@@ -1,0 +1,1504 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\Mod_Files;
+use App\Models\Mod_Order;
+use App\Models\Mod_Screening_Number;
+use App\Models\Mod_Trx_h;
+use App\Models\Mod_KTP_NA;
+use App\Imports\MessageImport;
+use App\Exports\RptPaket4;
+use App\Exports\RptPaket3;
+use App\Exports\RptPaket2;
+use App\Exports\RptPaket1;
+use App\Exports\Rpt1;
+use App\Exports\Rpt2;
+use App\Exports\Rpt3;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\Builder;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Maatwebsite\Excel\Facades\Excel;
+
+class Whiz extends Controller
+{
+    public function index(Request $request)
+    {
+		if(Session::get('userid'))
+		{
+			return view('home.datawhiz.datawhiz');
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('http://192.168.100.100/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+    }
+
+    public function view(Request $request, $id)
+    {
+		if(Session::get('userid'))
+		{
+			$id 		= $id;
+			$data1 		= DB::table('trx_screen_no_h')->where('id', $id)->select('customerno')->get();
+			foreach ($data1 as $res1)
+			{
+				$custno = $res1->customerno;
+			}
+
+			$data2  	= DB::table('trx_screen_no_h')
+							->where('trx_screen_no_h.id', $id)
+							->join('master_company', 'master_company.customerno', '=', 'trx_screen_no_h.customerno')
+							->select('company_name')
+							->get();
+			foreach ($data2 as $res2)
+			{
+				$cname = $res2->company_name;
+			}
+
+			$data3		= DB::table('trx_screen_no_h')
+							->where('trx_screen_no_h.id', $id)
+							->join('master_paket_customer', 'master_paket_customer.customerno', '=', 'trx_screen_no_h.customerno')
+							->select('product_paket_id')
+							->get();
+			foreach ($data3 as $res3)
+			{
+				$paketid = $res3->product_paket_id;
+			}
+
+			$data4		= DB::table('trx_screen_no_h')->where('id', $id)->select('nama_file')->get();
+			foreach ($data4 as $res4)
+			{
+				$fileSkip = $res4->nama_file;
+			}
+			
+			$data5		= DB::table('trx_screen_no_h')->where('id', $id)->select('nama_file_hp')->get();
+			foreach ($data5 as $res5)
+			{
+				$fileHp = $res5->nama_file_hp;
+			}
+			
+			$data6		= DB::table('trx_screen_no_h')->where('id', $id)->select('nama_file_wa')->get();
+			foreach ($data6 as $res6)
+			{
+				$fileWa = $res6->nama_file_wa;
+			}
+			
+			return view('home.datawhiz.edit', compact('custno','id','cname','paketid','fileSkip','fileHp','fileWa'));
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('http://192.168.100.100/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+
+    public function dttable(Request $request)
+    {
+		if ($request->ajax()) 
+		{
+			dataTableGeneralSearch($request, function($search) {
+				return [
+					'filter' => [
+						'general_search' => $search
+					]
+				];
+			});
+
+			$data = QueryBuilder::for(Mod_Trx_h::class)
+					->where('master_company.active', 1)
+					->join('master_company', 'master_company.customerno', '=', 'trx_screen_no_h.customerno')	
+					->join('master_paket_customer', 'master_paket_customer.customerno', '=', 'trx_screen_no_h.customerno')	
+					->select('trx_screen_no_h.id', 'trx_screen_no_h.customerno','master_company.company_name',DB::raw('CASE WHEN nama_file IS NULL THEN nama_file_hp WHEN nama_file IS NULL AND nama_file_hp IS NULL THEN nama_file_wa ELSE nama_file END as nama_file'),'jml_ktp','jml_ktp_null_hp','jml_ktp_with_hp','jml_no_hp','jml_all_no_hp','jml_no_hp_valid','jml_all_no_wa','jml_no_wa_valid','trx_screen_no_h.fcompleted','master_paket_customer.product_paket_id')
+					->orderBy('trx_screen_no_h.id','DESC')
+					->allowedFilters(
+						AllowedFilter::scope('general_search')
+					)
+					->paginate($request->query('perpage', 10))
+					->appends(request()->query());
+
+			return response()->paginator($data);
+		}
+
+        return view('home.datawhiz.datawhiz');
+	}
+
+	public function proses(Request $request)
+	{
+		if(Session::get('userid'))
+		{
+            $time = microtime();
+            $time = explode(' ', $time);
+            $time = $time[1] + $time[0];
+            $start = $time;
+        
+			$campid			= $request->campid;
+			$customerno		= $request->customerno;
+			$files		 	= $request->filex;
+			$created_at		= date('Y-m-d H:i:s');
+
+			$OriginalNames	 = $files->getClientOriginalName();
+			$paths			 = $files->move(storage_path('app/public/uploads'), $OriginalNames);
+
+			$filterResult0 = DB::table('trx_screen_no_h')->select(DB::raw('COUNT(id) as tot_id'))->where('nama_file', $OriginalNames)->get();
+			foreach ($filterResult0 as $hsl0)
+			{
+				$tot_id = $hsl0->tot_id;
+			}
+			
+			if ($tot_id !== 0)
+			{
+				return response()->json(['error' => 'Nama file excel sudah ada !!!']);
+			}
+			else
+			{
+				$cek = DB::connection('mysql_3')->table('trx_screen_no_h')->select(DB::raw('COUNT(id) as tid'))->where('id', $campid)->get();
+				foreach ($cek as $res)
+				{
+					$tid = $res->tid;
+				}
+				
+				if ($tid == 0)
+				{
+					Mod_Files::truncate();
+
+					Mod_Order::truncate();
+
+					Mod_Screening_Number::truncate();
+						
+					// import data
+					Excel::import(new MessageImport, $paths);
+
+					$filterResult1 = DB::connection('mysql_3')->table('tmp_files')->select(DB::raw('COUNT(no_ktp) as tot_ktp'))->get();
+					foreach ($filterResult1 as $hsl1)
+					{
+						$tot_ktp = $hsl1->tot_ktp;
+					}
+					
+					$filterResult2 = DB::connection('mysql_3')->table('tmp_files')->select(DB::raw('COUNT(no_ktp) as null_hp'))->where('no_telp','#N/A')->get();
+					foreach ($filterResult2 as $hsl2)
+					{
+						$null_hp = $hsl2->null_hp;
+					}
+
+<<<<<<< HEAD
+					DB::connection('mysql_3')->table('trx_screen_no_h')->insert(
+							[
+								'id'				=> $campid,
+								'customerno'		=> $customerno,
+								'nama_file'			=> $OriginalNames,
+								'jml_ktp'			=> $tot_ktp,
+								'jml_ktp_null_hp'	=> $null_hp,
+								'created_at'		=> $created_at
+							]
+						);
+=======
+					DB::table('trx_screen_no_h')->insert(
+						[
+							'id'				=> $campid,
+							'customerno'		=> $customerno,
+							'nama_file'			=> $OriginalNames,
+							'jml_ktp'			=> $tot_ktp,
+							'jml_ktp_null_hp'	=> $null_hp,
+							'created_at'		=> $created_at
+						]
+					);
+
+					DB::connection('mysql_3')->table('trx_screen_no_h')->insert(
+						[
+							'id'				=> $campid,
+							'customerno'		=> $customerno,
+							'nama_file'			=> $OriginalNames,
+							'jml_ktp'			=> $tot_ktp,
+							'jml_ktp_null_hp'	=> $null_hp,
+							'created_at'		=> $created_at
+						]
+					);
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+
+					//tampung nomor-nomor KTP yang tidak ada nomor-nomor hp nya.
+					$filterResult3 = DB::connection('mysql_3')->table('tmp_files')->select(DB::raw('no_ktp as null_hp'))->where('no_telp','#N/A')->get();
+					foreach ($filterResult3 as $hsl3)
+					{
+						$nulls_hp = $hsl3->null_hp;
+						
+						DB::connection('mysql_3')->table('tmp_ktp_not_hp')->insert(
+								[
+									'ktpno'			=> $nulls_hp,
+									'created_at'	=> $created_at
+								]
+							);
+					}				
+								
+					Mod_Files::where('no_telp','#N/A')->delete();
+
+					$data2 = DB::connection('mysql_3')->table('tmp_files')->select('no_ktp')->orderBy('no_ktp','ASC')->get();
+
+					foreach($data2 as $rowKTP)
+					{
+						$no_ktp		= $rowKTP->no_ktp;
+
+						DB::connection('mysql_3')->table('tmp_order')->insert(
+							[
+								'ktpno'	=> $no_ktp,
+								'created_at' => date('Y-m-d H:i:s')
+							]
+						);
+					}
+
+					$data3 = DB::connection('mysql_3')->table('tmp_files')->select('no_ktp','no_telp')->orderBy('no_ktp','ASC')->get();
+
+					foreach($data3 as $rows)
+					{
+						$no_ktp		= $rows->no_ktp;
+						$no_telp	= $rows->no_telp;
+						$areplace	= array("{,","{","}");
+						$no_telp	= str_replace("{,","{",$no_telp);
+
+						$splitnum	= explode(',', str_replace(",,",",",$no_telp));
+						
+						$totalnum	= (count($splitnum) >= 50 ? 50:count($splitnum));
+						
+						$ktpnum = array();
+						
+						for($i = 0; $i < $totalnum; $i++)
+						{
+							$number = Str::replace($areplace,"",preg_replace("/\(([^()]+|(?R))\)/","", TRIM($splitnum[$i])));
+							$dated  = preg_match('#\((.*?)\)#', TRIM($splitnum[$i]), $match, PREG_UNMATCHED_AS_NULL);		
+							
+							if (!empty($match[1]))
+							{
+								$match[1] = $match[1];
+							}
+							else
+							{
+								$match[1] = "1900-01-01";								
+							}			
+							
+							$create_at	 = date('Y-m-d H:i:s');
+
+							DB::connection('mysql_3')->table('tmp_number')->insert(
+								[
+									'ktpno' => $no_ktp,
+									'phoneno' => $number,
+									'tanggal' => $match[1],
+									'created_at' => $create_at,
+									'id_urut' => 0
+								]
+							);
+						}
+					}
+					
+<<<<<<< HEAD
+					$data = DB::connection('mysql_3')->table('tmp_number')->select('ktpno')->orderBy('ktpno','ASC')->get(); 
+=======
+					$data = DB::table('tmp_number')->select('ktpno')->orderBy('ktpno','ASC')->get(); 
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+					foreach($data as $rows)
+					{
+						$no_ktp		= $rows->ktpno;
+					
+<<<<<<< HEAD
+						DB::connection('mysql_3')->select("CALL sp_sort_data('".$no_ktp."');");
+=======
+						if ($customerno !== "DWH00000002C") //Jika customer bukan BTN
+						{
+							DB::select("CALL sp_sort_data('".$no_ktp."');");
+						}
+						else
+						{
+							DB::select("CALL sp_sort_data_btn('".$no_ktp."');");
+						}
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+					}
+
+					$filterResult3 = DB::connection('mysql_3')->table('tmp_order')->select(DB::raw('COUNT(ktpno) as jml_ktp'))->get();
+					foreach ($filterResult3 as $hsl3)
+					{
+						$ktp_hp = $hsl3->jml_ktp;
+					}
+					
+					$filterResult4 = DB::connection('mysql_3')->table('tmp_number')->select(DB::raw('COUNT(phoneno) as tot_hp'))->get();
+					foreach ($filterResult4 as $hsl4)
+					{
+						$tot_hp = $hsl4->tot_hp;
+					}
+
+					$updated_at		= date('Y-m-d H:i:s');
+					
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $campid)
+						->where('nama_file', $OriginalNames)
+						->update(
+							[
+								'jml_ktp_with_hp'	=> $ktp_hp,
+								'jml_no_hp'			=> $tot_hp,
+								'updated_at'		=> $updated_at,
+							]
+						);
+							
+					DB::connection('mysql_3')->select("CALL sp_copy_to_trx_d('".$campid."');");
+					
+					DB::table('trx_screen_no_h')->insert(
+							[
+								'id'				=> $campid,
+								'customerno'		=> $customerno,
+								'nama_file'			=> $OriginalNames,
+								'jml_ktp'			=> $tot_ktp,
+								'jml_ktp_null_hp'	=> $null_hp,
+								'jml_ktp_with_hp'	=> $ktp_hp,
+								'jml_no_hp'			=> $tot_hp,
+								'created_at'		=> date('Y-m-d H:i:s'),
+								'updated_at'		=> date('Y-m-d H:i:s')
+							]
+						);
+					
+<<<<<<< HEAD
+=======
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $campid)
+						->where('nama_file', $OriginalNames)
+						->update(
+							[
+								'jml_ktp_with_hp'	=> $ktp_hp,
+								'jml_no_hp'			=> $tot_hp,
+								'updated_at'		=> $updated_at,
+							]
+						);
+					
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+					unlink(storage_path("app/public/uploads/").$OriginalNames);
+
+					Mod_Files::truncate();
+
+					Mod_Order::truncate();
+
+					Mod_Screening_Number::truncate();
+
+					Mod_KTP_NA::truncate();
+				}
+				else
+				{
+					return response()->json(['error' => 'Nama file excel sudah ada !!!']);
+				}
+				/*
+				else
+				{
+					Mod_Files::truncate();
+
+					Mod_Order::truncate();
+
+					Mod_Screening_Number::truncate();
+						
+					// import data
+					Excel::import(new MessageImport, $paths);
+
+					$filterResult1 = DB::connection('mysql_3')->table('tmp_files')->select(DB::raw('COUNT(no_ktp) as tot_ktp'))->get();
+					foreach ($filterResult1 as $hsl1)
+					{
+						$tot_ktp = $hsl1->tot_ktp;
+					}
+					
+					$filterResult2 = DB::connection('mysql_3')->table('tmp_files')->select(DB::raw('COUNT(no_ktp) as null_hp'))->where('no_telp','#N/A')->get();
+					foreach ($filterResult2 as $hsl2)
+					{
+						$null_hp = $hsl2->null_hp;
+					}
+
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $campid)
+						->update(
+							[
+								'nama_file'			=> $OriginalNames,
+								'jml_ktp'			=> $tot_ktp,
+								'jml_ktp_null_hp'	=> $null_hp,
+								'created_at'		=> date('Y-m-d H:i:s'),
+							]);
+
+
+					$filterResult3 = DB::connection('mysql_3')->table('tmp_files')->select(DB::raw('no_ktp as null_hp'))->where('no_telp','#N/A')->get();
+					foreach ($filterResult3 as $hsl3)
+					{
+						$nulls_hp = $hsl3->null_hp;
+						
+<<<<<<< HEAD
+						DB::connection('mysql_3')->table('tmp_ktp_not_hp')->insert(
+								[
+									'ktpno'			=> $nulls_hp,
+									'created_at'	=> $created_at
+								]
+							);
+=======
+						DB::table('tmp_ktp_not_hp')->insert(
+							[
+								'ktpno'			=> $nulls_hp,
+								'created_at'	=> $created_at
+							]
+						);
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+					}				
+								
+					Mod_Files::where('no_telp','#N/A')->delete();
+
+					$data2 = DB::connection('mysql_3')->table('tmp_files')->select('no_ktp')->orderBy('no_ktp','ASC')->get();
+
+					foreach($data2 as $rowKTP)
+					{
+						$no_ktp		= $rowKTP->no_ktp;
+
+						DB::connection('mysql_3')->table('tmp_order')->insert(
+							[
+								'ktpno'	=> $no_ktp,
+								'created_at' => date('Y-m-d H:i:s')
+							]
+						);
+					}
+
+					$data3 = DB::connection('mysql_3')->table('tmp_files')->select('no_ktp','no_telp')->orderBy('no_ktp','ASC')->get();
+
+					foreach($data3 as $rows)
+					{
+						$no_ktp		= $rows->no_ktp;
+						$no_telp	= $rows->no_telp;
+						$areplace	= array("{,","{","}");
+						$no_telp	= str_replace("{,","{",$no_telp);
+
+						//$splitnum  = explode(',', $no_telp);
+						$splitnum	= explode(',', str_replace(",,",",",$no_telp));
+						
+						$totalnum	= (count($splitnum) >= 50 ? 50:count($splitnum));
+						
+						$ktpnum = array();
+						
+						for($i = 0; $i < $totalnum; $i++)
+						{
+							$number = Str::replace($areplace,"",preg_replace("/\(([^()]+|(?R))\)/","", TRIM($splitnum[$i])));
+							$dated  = preg_match('#\((.*?)\)#', TRIM($splitnum[$i]), $match, PREG_UNMATCHED_AS_NULL);		
+							
+							$create_at	 = date('Y-m-d H:i:s');
+
+							DB::connection('mysql_3')->table('tmp_number')->insert(
+								[
+									'ktpno' => $no_ktp,
+									'phoneno' => $number,
+									'tanggal' => $match[1],
+									'created_at' => $create_at,
+									'id_urut' => 0
+								]
+							);
+						}
+					}
+					
+					//dd('stop');
+
+					$data = DB::connection('mysql_3')->table('tmp_number')->select('ktpno')->orderBy('ktpno','ASC')->get(); 
+					foreach($data as $rows)
+					{
+						$no_ktp		= $rows->ktpno;
+						
+<<<<<<< HEAD
+						DB::connection('mysql_3')->select("CALL sp_sort_data('".$no_ktp."');");
+						
+=======
+						if ($customerno !== "DWH00000002C") //Jika customer bukan BTN
+						{
+							DB::select("CALL sp_sort_data('".$no_ktp."');");
+						}
+						else
+						{
+							DB::select("CALL sp_sort_data_btn('".$no_ktp."');");
+						}
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+					}
+
+					$filterResult3 = DB::connection('mysql_3')->table('tmp_order')->select(DB::raw('COUNT(ktpno) as jml_ktp'))->get();
+					foreach ($filterResult3 as $hsl3)
+					{
+						$ktp_hp = $hsl3->jml_ktp;
+					}
+					
+					$filterResult4 = DB::connection('mysql_3')->table('tmp_number')->select(DB::raw('COUNT(phoneno) as tot_hp'))->get();
+					foreach ($filterResult4 as $hsl4)
+					{
+						$tot_hp = $hsl4->tot_hp;
+					}
+
+					$updated_at		= date('Y-m-d H:i:s');
+					
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $campid)
+						->where('nama_file', $OriginalNames)
+						->update(
+							[
+								'jml_ktp_with_hp'	=> $ktp_hp,
+								'jml_no_hp'			=> $tot_hp,
+								'updated_at'		=> $updated_at,
+							]);
+							
+					DB::connection('mysql_3')->select("CALL sp_copy_to_trx_d('".$campid."');");
+					
+<<<<<<< HEAD
+					DB::table('trx_screen_no_h')->insert(
+							[
+								'id'				=> $campid,
+								'customerno'		=> $customerno,
+								'nama_file'			=> $OriginalNames,
+								'jml_ktp'			=> $tot_ktp,
+								'jml_ktp_null_hp'	=> $null_hp,
+								'jml_ktp_with_hp'	=> $ktp_hp,
+								'jml_no_hp'			=> $tot_hp,
+								'created_at'		=> date('Y-m-d H:i:s'),
+								'updated_at'		=> date('Y-m-d H:i:s')
+							]
+						);
+				*/
+
+=======
+					DB::connection('mysql_3')->table('trx_screen_no_h')->insert(
+						[
+							'id'				=> $campid,
+							'customerno'		=> $customerno,
+							'nama_file'			=> $OriginalNames,
+							'jml_ktp'			=> $tot_ktp,
+							'jml_ktp_null_hp'	=> $null_hp,
+							'jml_ktp_with_hp'	=> $ktp_hp,
+							'jml_no_hp'			=> $tot_hp,
+							'created_at'		=> $created_at,
+							'updated_at'		=> date('Y-m-d H:i:s')
+						]
+					);					
+
+					unlink(storage_path("app/public/uploads/").$OriginalNames);
+
+					Mod_Files::truncate();
+
+					Mod_Order::truncate();
+
+					Mod_Screening_Number::truncate();
+
+					Mod_KTP_NA::truncate();
+				}
+				*/
+				
+>>>>>>> bd2846139fb3bf686ad6c312b46f8d84a6ba3bb9
+				//exit;
+				$time = microtime();
+				$time = explode(' ', $time);
+				$time = $time[1] + $time[0];
+				$finish = $time;
+				$total_time = round((($finish - $start) / 60), 2);
+				
+				return response()->json(['success' => $total_time]);
+				//return response()->json(['success' => 'Done.']);
+			}
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('http://192.168.100.100/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+
+	public function copy_result(Request $request)
+	{
+		if(Session::get('userid'))
+		{
+			$campaignid	= $request->campaignid;
+	
+			$filterResult5 = DB::connection('mysql_3')->table('trx_skip_tracing_d')
+								->where('h_id', $campaignid)
+								->select('ktpno','phoneno','tanggal','created_at','updated_at','id_urut')
+								->get();
+								
+			foreach ($filterResult5 as $hsl5)
+			{
+				DB::table('trx_skip_tracing_d')->insert(
+					[
+						'h_id'			=> $campaignid,
+						'ktpno'			=> $hsl5->ktpno,
+						'phoneno'		=> $hsl5->phoneno,
+						'tanggal'		=> $hsl5->tanggal,
+						'created_at'	=> $hsl5->created_at,
+						'updated_at'	=> date('Y-m-d H:i:s'),
+						'id_urut'		=> $hsl5->id_urut
+					]
+				);				
+			}
+		
+			return response()->json(['success' => 'Done.']);
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('http://192.168.100.100/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+
+
+    public function autocomplete(Request $request)
+    {
+        $query = $request->get('query');
+		  
+        $filterResult = DB::table('master_company')->where('company_name', 'LIKE', '%'.$query.'%')->orWhere('customerno', 'LIKE', '%'.$query.'%')->where('active', 1)->select('customerno', 'company_name')->get();
+		//dd($data);
+
+        $data = array();
+
+        foreach ($filterResult as $hsl)
+        {
+			$data[] = $hsl->customerno;
+            $data[] = $hsl->company_name;
+        }
+
+        return response()->json($data);
+    } 
+	
+	public function complete(Request $request, $id)
+	{
+		if(Session::get('userid'))
+		{
+			$updated_at		= date('Y-m-d H:i:s');
+	 
+			$totcust = DB::table('trx_screen_no_h')->select(DB::raw('COUNT(customerno) as totcust'))->where('id', $id)->get();
+			foreach ($totcust as $hslcust)
+			{
+				$totcust = $hslcust->totcust;
+			}
+			
+			if ($totcust > 0)
+			{
+				$cust = DB::table('trx_screen_no_h')->select('customerno')->where('id', $id)->get();
+				foreach ($cust as $hsl)
+				{
+					$custno = $hsl->customerno;
+				}
+				//dd($custno);
+			}
+			else
+			{
+				return response()->json(['error' => 'Belum ada data yang di upload !!!']);
+			}
+			
+			$paket = DB::table('master_paket_customer')->select('product_paket_id')->where('customerno', $custno)->get();
+			foreach ($paket as $hsl)
+			{
+				$paket_id = $hsl->product_paket_id;
+			}
+
+			if ($paket_id == 1)
+			{
+				$tot = DB::table('trx_skip_tracing_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total = $hsl->tot;
+				}
+				
+				if ($total == 0)
+				{
+					return response()->json(['error' => 'Belum ada data Skip Tracing yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			}
+			elseif ($paket_id == 2)
+			{
+				$tot = DB::table('trx_screen_no_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total = $hsl->tot;
+				}
+				
+				if ($total == 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening Number yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			}
+			elseif ($paket_id == 3)
+			{
+				$tot = DB::table('trx_screen_wa_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total = $hsl->tot;
+				}
+				
+				if ($total == 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening WA yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			}
+			elseif ($paket_id == 4)
+			{
+				$tot = DB::table('trx_skip_tracing_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total1 = $hsl->tot;
+				}
+				
+				$tot2 = DB::table('trx_screen_no_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot2 as $hsl2)
+				{
+					$total2 = $hsl2->tot;
+				}
+				
+				if ($total1 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Skip Tracing yang di upload !!!']);
+				}
+				elseif ($total2 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening Number yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			}
+			elseif ($paket_id == 5)
+			{
+				$tot = DB::table('trx_skip_tracing_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total1 = $hsl->tot;
+				}
+				
+				$tot2 = DB::table('trx_screen_wa_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot2 as $hsl2)
+				{
+					$total2 = $hsl2->tot;
+				}
+				
+				if ($total1 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Skip Tracing yang di upload !!!']);
+				}
+				elseif ($total2 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening WA yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			}
+			elseif ($paket_id == 6)
+			{
+				$tot = DB::table('trx_screen_no_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total1 = $hsl->tot;
+				}
+				
+				$tot2 = DB::table('trx_screen_wa_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot2 as $hsl2)
+				{
+					$total2 = $hsl2->tot;
+				}
+				
+				if ($total1 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening Number yang di upload !!!']);
+				}
+				elseif ($total2 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening WA yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			} 
+			elseif ($paket_id == 7)
+			{
+				$tot = DB::table('trx_skip_tracing_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot as $hsl)
+				{
+					$total1 = $hsl->tot;
+				}
+				
+				$tot2 = DB::table('trx_screen_no_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot2 as $hsl2)
+				{
+					$total2 = $hsl2->tot;
+				}
+				
+				$tot3 = DB::table('trx_screen_wa_d')->select(DB::raw('COUNT(h_id) as tot'))->where('h_id', $id)->get();
+				foreach ($tot3 as $hsl3)
+				{
+					$total3 = $hsl3->tot;
+				}
+				
+				if ($total1 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Skip Tracing yang di upload !!!']);
+				}
+				elseif ($total2 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening Number yang di upload !!!']);
+				}
+				elseif ($total3 = 0)
+				{
+					return response()->json(['error' => 'Belum ada data Screening WA yang di upload !!!']);
+				}
+				else
+				{
+					DB::table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					DB::connection('mysql_3')->table('trx_screen_no_h')
+						->where('id', $id)
+						->update(
+							[
+								'fcompleted'	=> 1,
+								'updated_at'	=> $updated_at,
+							]);
+				
+					return response()->json(['success' => 'Done.']);
+				}
+			}
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('/')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+	
+	public function deleted(Request $request, $id)
+	{
+		if(Session::get('userid'))
+		{
+			$totcust = DB::table('trx_screen_no_h')->select(DB::raw('COUNT(customerno) as totcust'))->where('id', $id)->get();
+			foreach ($totcust as $hslcust)
+			{
+				$totcust = $hslcust->totcust;
+			}
+			
+			if ($totcust > 0)
+			{
+				$cust = DB::table('trx_screen_no_h')->select('customerno')->where('id', $id)->get();
+				foreach ($cust as $hsl)
+				{
+					$custno = $hsl->customerno;
+				}
+				//dd($custno);
+			}
+			else
+			{
+				return response()->json(['error' => 'Belum ada data yang di upload !!!']);
+			}
+			
+			$paket = DB::table('master_paket_customer')->select('product_paket_id')->where('customerno', $custno)->get();
+			foreach ($paket as $hsl)
+			{
+				$paket_id = $hsl->product_paket_id;
+			}
+
+			if ($paket_id == 1)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_skip_tracing_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			}
+			elseif ($paket_id == 2)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_screen_no_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			}
+			elseif ($paket_id == 3)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_screen_wa_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			}
+			elseif ($paket_id == 4)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_skip_tracing_d')->where('h_id', $id)->delete();
+			
+				DB::table('trx_screen_no_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			}
+			elseif ($paket_id == 5)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_skip_tracing_d')->where('h_id', $id)->delete();
+			
+				DB::table('trx_screen_wa_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			}
+			elseif ($paket_id == 6)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_screen_no_d')->where('h_id', $id)->delete();
+			
+				DB::table('trx_screen_wa_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			} 
+			elseif ($paket_id == 7)
+			{
+				DB::table('trx_screen_no_h')->where('id', $id)->delete();
+			
+				DB::connection('mysql_3')->table('trx_screen_no_h')->where('id', $id)->where('fcompleted', 0)->delete();
+			
+				DB::table('trx_skip_tracing_d')->where('h_id', $id)->delete();
+			
+				DB::table('trx_screen_no_d')->where('h_id', $id)->delete();
+			
+				DB::table('trx_screen_wa_d')->where('h_id', $id)->delete();
+			
+				return response()->json(['success' => 'Done.']);
+			}
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('http://192.168.100.100/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}
+	
+	public function cariCustomer(Request $request, $id)
+	{
+		$data = DB::table('master_company')
+                ->where('master_company.customerno', $id)
+				->orWhere('company_name', $id)
+				->join('master_paket_customer', 'master_paket_customer.customerno', '=', 'master_company.customerno')
+ 				->select('master_company.id','master_company.customerno','company_name','product_paket_id')
+				->first();
+		//dd($data);
+		
+		return response()->json($data);
+	}
+	
+	public function getID(Request $request)
+	{
+		$data = DB::table('trx_screen_no_h')
+				->select(DB::raw('CASE WHEN COUNT(id) = 0 THEN 1 ELSE MAX(id)+1 END as ID'))
+				->first();
+		
+		return response()->json($data);
+	}
+
+	public function download(Request $request, $id)
+    {
+		$periode	= date('Y-m-d');
+		$id			= $id;
+ 
+		$data1 		= DB::table('trx_screen_no_h')->where('id', $id)->select('customerno')->get();
+		foreach ($data1 as $res1)
+        {
+            $custno = $res1->customerno;
+        }		
+		
+		$paket = DB::table('master_paket_customer')->select('product_paket_id')->where('customerno', $custno)->get();
+        foreach ($paket as $hsl)
+        {
+            $paket_id = $hsl->product_paket_id;
+        }
+		
+		if ($paket_id == 1)
+		{
+			//Skip Tracing
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->join('trx_skip_tracing_d', 'trx_skip_tracing_d.h_id', '=', 'trx_screen_no_h.id')
+					->select(DB::raw('ktpno as Ktpno'),DB::raw('phoneno as Phone'), DB::raw('tanggal as Tanggal'))
+					->orderBy('trx_skip_tracing_d.id', 'ASC')
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new Rpt1(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		elseif ($paket_id == 2)
+		{
+			//Screening Number
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->join('trx_screen_no_d', 'trx_screen_no_d.h_id', '=', 'trx_screen_no_h.id')
+					->select(DB::raw('phonenovalid as Phone'), DB::raw('status_no as Status_no'))
+					->orderBy('trx_screen_no_d.id', 'ASC')
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new Rpt2(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		elseif ($paket_id == 3)
+		{
+			//Screening WA
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->join('trx_screen_wa_d', 'trx_screen_wa_d.h_id', '=', 'trx_screen_no_h.id')
+					->select(DB::raw('phonewavalid as Phone'), DB::raw('status_wa as Status_wa'))
+					->orderBy('trx_screen_wa_d.id', 'ASC')
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new Rpt3(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		elseif ($paket_id == 4)
+		{
+			//Paket 1 (Skip Tracing + Screening Number)
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->join('trx_skip_tracing_d', 'trx_skip_tracing_d.h_id', '=', 'trx_screen_no_h.id')
+					->leftJoin('trx_screen_no_d', 'trx_screen_no_d.phonenovalid', '=', 'trx_skip_tracing_d.phoneno')
+					->select(DB::raw('ktpno as Ktpno'),DB::raw('phoneno as Phone'), DB::raw('tanggal as Tanggal'), DB::raw('status_no as Status_no'))
+					->orderBy('trx_skip_tracing_d.id', 'ASC')
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new RptPaket1(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		elseif ($paket_id == 5)
+		{
+			//Paket 2 (Skip Tracing + Screening WA)
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->join('trx_skip_tracing_d', 'trx_skip_tracing_d.h_id', '=', 'trx_screen_no_h.id')
+					->leftJoin('trx_screen_wa_d', 'trx_screen_wa_d.phonewavalid', '=', 'trx_skip_tracing_d.phoneno')
+					->select(DB::raw('ktpno as Ktpno'),DB::raw('phoneno as Phone'), DB::raw('tanggal as Tanggal'), DB::raw('status_wa as Status_wa'))
+					->orderBy('trx_skip_tracing_d.id', 'ASC')
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new RptPaket2(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		elseif ($paket_id == 6)
+		{
+			//Paket 3 (Screening Number + Screening WA)
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->leftJoin('trx_screen_no_d', 'trx_screen_no_d.h_id', '=', 'trx_screen_no_h.id')
+					->leftJoin('trx_screen_wa_d', 'trx_screen_wa_d.phonewavalid', '=', 'trx_screen_no_d.phonenovalid')
+					->select(DB::raw('phonenovalid as Phone'), DB::raw('status_no as Status_no'), DB::raw('status_wa as Status_wa'))
+					->orderBy('trx_screen_no_d.id', 'ASC')
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new RptPaket3(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		elseif ($paket_id == 7)
+		{
+			//Paket 4 (Skip Tracing + Screening Number + Screening WA)
+			$data = DB::table('trx_screen_no_h') 
+					->where('trx_screen_no_h.id', $id) 
+					->join('trx_skip_tracing_d', 'trx_skip_tracing_d.h_id', '=', 'trx_screen_no_h.id')
+					->leftJoin('trx_screen_no_d', 'trx_screen_no_d.phonenovalid', '=', 'trx_skip_tracing_d.phoneno')
+					->leftJoin('trx_screen_wa_d', 'trx_screen_wa_d.phonewavalid', '=', 'trx_skip_tracing_d.phoneno')
+					->select('trx_skip_tracing_d.id',DB::raw('ktpno as Ktpno'),DB::raw('phoneno as Phone'), DB::raw('tanggal as Tanggal'), DB::raw('status_no as Status_no'), DB::raw('status_wa as Status_wa'))
+					->orderBy('trx_skip_tracing_d.id', 'asc')
+					->distinct()
+					->get();
+
+			ob_end_clean();
+
+			return Excel::download(new RptPaket4(
+						$data
+					), 'Data_Whiz_'.$periode.'.xlsx');
+		}
+		
+		
+        //return Excel::download(new SNExport, 'Data_Whiz_'.$periode.'.csv');
+		//return new SNExport();
+    }
+
+	public function downskip(Request $request, $id)
+    {
+		$periode	= date('Y-m-d');
+		$id			= $id;
+	
+		//Skip Tracing
+		$data = DB::table('trx_screen_no_h') 
+				->where('trx_screen_no_h.id', $id) 
+				->join('trx_skip_tracing_d', 'trx_skip_tracing_d.h_id', '=', 'trx_screen_no_h.id')
+				->select(DB::raw('ktpno as Ktpno'),DB::raw('phoneno as Phone'), DB::raw('tanggal as Tanggal'))
+				->orderBy('trx_skip_tracing_d.id', 'ASC')
+				->get();
+				
+		//dd($data);
+
+		ob_end_clean();
+
+		return Excel::download(new Rpt1(
+					$data
+				), 'Data_Skip_Tracing_'.$periode.'.xlsx');
+    }
+
+	public function downscreenhp(Request $request, $id)
+    {
+		$periode	= date('Y-m-d');
+		$id			= $id;
+
+		//Screening Number
+		$data = DB::table('trx_screen_no_h') 
+				->where('trx_screen_no_h.id', $id) 
+				->join('trx_screen_no_d', 'trx_screen_no_d.h_id', '=', 'trx_screen_no_h.id')
+				->select(DB::raw('phonenovalid as Phone'), DB::raw('status_no as Status_no'))
+				->orderBy('trx_screen_no_d.id', 'ASC')
+				->get();
+
+		ob_end_clean();
+
+		return Excel::download(new Rpt2(
+					$data
+				), 'Data_Screening_Number_'.$periode.'.xlsx');
+    }
+
+	public function downscreenwa(Request $request, $id)
+    {
+		$periode	= date('Y-m-d');
+		$id			= $id;
+
+		//Screening WA
+		$data = DB::table('trx_screen_no_h') 
+				->where('trx_screen_no_h.id', $id) 
+				->join('trx_screen_wa_d', 'trx_screen_wa_d.h_id', '=', 'trx_screen_no_h.id')
+				->select(DB::raw('phonewavalid as Phone'), DB::raw('status_wa as Status_wa'))
+				->orderBy('trx_screen_wa_d.id', 'ASC')
+				->get();
+
+		ob_end_clean();
+
+		return Excel::download(new Rpt3(
+					$data
+				), 'Data_Screening_WA_'.$periode.'.xlsx');
+    }
+
+}

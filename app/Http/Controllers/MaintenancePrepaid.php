@@ -1,0 +1,680 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+
+class MaintenancePrepaid extends Controller
+{
+    public function index(Request $request)
+    {
+		if(Session::get('userid'))
+		{
+			//jika memang session sudah terdaftar
+			$username = Session::get('username');
+			
+            /*
+			$query1 = DB::table('master_maintenance_all')
+                        ->where('period', DB::raw('DATE_FORMAT(CURDATE(),"%Y%m")'))
+                        ->where('flag', 1)
+                        ->where('end_time', '1900-01-01 00:00:00')
+                        ->select('flag')
+                        ->get();
+			*/
+
+            //if (count($query1) == 1)
+            //{
+            //    return view('home.notif.input_error');
+            //}
+            //else 
+            //{
+                return view('home.maintenance.period');
+            //}
+			
+		}
+		else
+		{
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('http://192.168.100.115/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+		}
+	}	
+
+    public function proses(Request $request)
+    {
+        if(Session::get('userid'))
+        {
+			/*
+            $id = DB::table('master_maintenance_all')->insertGetId(
+                    [
+                        'period' => date('Ym'),
+                        'begin_time' => Carbon::now('Asia/Jakarta')->toDateTimeString(),
+                        'flag' => 1,
+                        'end_time' => "1900-01-01 00:00:00",
+                        'crtby' => Session::get('userid'),
+                        'crtdate' => Carbon::now('Asia/Jakarta')->toDateTimeString()
+                    ]
+                );
+			*/
+				
+			$month = $request->month;
+			$thn = $request->thn;
+			$userid = $request->userid;
+			
+			//dd($month);
+            $time = microtime();
+            $time = explode(' ', $time);
+            $time = $time[1] + $time[0];
+            $start = $time;
+        
+            $period = $thn.$month;		//period bs
+            $period2 = $period - 1;		//period usage
+            $periodnow = date("Ym");	//period bulan berjalan
+            //dd($period2);
+			
+            if (substr($period2,4,2) == "00")
+            {
+                $period2 = ($thn - 1)."12";
+            }
+
+            $period5 = $period;
+            if (substr($period5,4,2) == "13")
+            {
+                $period5 = ($thn + 1)."01";
+            }
+
+
+            $periodtgl = substr($period,0,4).'-'.substr($period,4,2).'-01';
+            $periodtglls = substr($period5,0,4).'-'.substr($period5,4,2).'-01';
+            $period2tgl = substr($period2,0,4).'-'.substr($period2,4,2).'-01';
+            $period5tgl = substr($period5,0,4).'-'.substr($period5,4,2).'-01';
+
+            //dd($period5tgl);
+        
+            $periodsrv = date('d/m/Y', strtotime($periodtgl)).' - '.date('d/m/Y', strtotime("last day", strtotime($period5tgl)));
+            $periodsrvls = date('d/m/Y', strtotime($period2tgl)).' - '.date('d/m/Y', strtotime("last day", strtotime($periodtgl)));
+            
+            //dd($periodsrvls);
+			
+			//Bersihkan semua data bs dan bs_detail yang sesuai dengan periode tersebut
+            $delbs = DB::table('bs_period')->where('bs_period.period',$period)->delete();
+            //dd($delbs);
+            $delbsdetail = DB::table('bs_detail_period')->where('bs_detail_period.period',$period)->delete();
+            //dd($delbsdetail);
+
+            $duedate = substr($period,0,4).'-'.substr($period,4,2).'-20';
+            $newstatementdate = date('Y-m-d', strtotime("last day", strtotime($period5tgl)));
+            $laststatementdate = $period2tgl;
+            $paymentdatevat = date('Y-m-d', strtotime("last day", strtotime($period5tgl)));
+            //dd($paymentdatevat);
+
+            $j = 0;
+            $customer = DB::select('SELECT distinct (customerno) cust_no FROM master_company WHERE customerno != "" AND invtypeid = 1 order by customerno;');
+            //dd($customer);
+            for($i = 0; $i < count($customer); $i++) 
+            {
+                $cust_no = $customer[$i]->cust_no;
+				//dd($cust_no);
+                
+                switch(substr($period2,4,2))
+                {
+                  case '01':
+                   $bulan='I';
+                   break;
+                  case '02':
+                   $bulan='II';
+                   break;
+                  case '03':
+                   $bulan='III';
+                   break;
+                  case '04':
+                   $bulan='IV';
+                   break;
+                  case '05':
+                   $bulan='V';
+                   break;
+                  case '06':
+                   $bulan='VI';
+                   break;
+                  case '07':
+                   $bulan='VII';
+                   break;
+                  case '08':
+                   $bulan='VIII';
+                   break;
+                  case '09':
+                   $bulan='IX';
+                   break;
+                  case '10':
+                   $bulan='X';
+                   break;
+                  case '11':
+                   $bulan='XI';
+                   break;
+                  case '12':
+                   $bulan='XII';
+                   break;      
+                }  
+
+				$j++;
+				//dd($period2);
+				$tgl = DB::table('trx_screen_no_h')
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $period2)
+							->where('customerno', $cust_no)
+							->where('trx_screen_no_h.fcompleted', 1)
+							->select('trx_screen_no_h.id', DB::raw('DATE_FORMAT(created_at,"%d") AS Tanggal'))
+							->orderBy('created_at','ASC')
+							->get();
+				//dd($tgl);
+				foreach($tgl as $rowtgl)
+				{
+					$hid 		= $rowtgl->id;
+					$tanggal 	= $rowtgl->Tanggal;
+			
+					if ($bulan == 'XII')
+					{
+						$bsno1 = str_pad($j, 4, '0', STR_PAD_LEFT).'/DW/'.$tanggal.'/'.$bulan.'/'.($thn - 1);
+					}
+					else
+					{
+						$bsno1 = str_pad($j, 4, '0', STR_PAD_LEFT).'/DW/'.$tanggal.'/'.$bulan.'/'.$thn;
+					}
+					
+					DB::table('bs_period')->insert(
+						[
+							'bsno' => $bsno1,
+							'period' => $period,
+							'customerno' => $cust_no,
+							'trxh_id' => $hid
+						]
+					);
+
+					$delbsdetail2 = DB::table('bs_detail_period')->where('PERIOD', $period)->where('CUSTOMERNO', $cust_no)->delete();
+
+					$delbsdetail3 = DB::table('bs_detail_period')->where('PERIOD', $period)->where('amount', 0)->delete();
+					
+					//PREVIOUS PAYMENT
+					$data1 = DB::table('trans')
+								->where(DB::raw('DATE_FORMAT(TRANSACTIONDATE,"%Y%m")'), $period)
+								->where('TRANSACTIONCODE', 'P')
+								->where('PAYMENTCODE', '!=', 'G')
+								->where('SETTLEMENT_STATUS', 0)
+								->where('CUSTOMERNO', $cust_no)
+								->select(DB::raw('sum(amount) AS amountz'),'customerno')
+								->groupBy('customerno')
+								->get();
+
+					foreach($data1 as $rowz)
+					{
+						$amount1 = $rowz->amountz;
+						$cust = $rowz->customerno;
+
+						$affected = DB::table('bs_period')
+									->where('bs_period.CUSTOMERNO', $cust)
+									->where('bs_period.period', $period)
+									->where('bs_period.trxh_id', $hid)
+									->update(['bs_period.previouspayment' => $amount1]);
+
+						DB::table('bs_detail_period')->insert(
+							[
+								'CUSTOMERNO' => $cust,
+								'description' => "Transfer Payment",
+								'amount' => $amount1 * -1,
+								'PERIOD' => $period,
+								'trxh_id' => $hid
+							]
+						);
+					}
+					
+					//PAYMENT PPh 23
+					$data2 = DB::table('trans')
+								->where(DB::raw('DATE_FORMAT(transactiondate,"%Y%m")'), $period2)
+								->where('transactioncode', 'P')
+								->where('paymentcode', 'G')
+								->where('customerno', '!=', null)
+								->where('customerno', $cust_no)
+								->select(DB::raw('SUM(amount) AS amountz'),'customerno')
+								->groupBy('customerno')
+								->get();
+
+					foreach($data2 as $rowz2)
+					{
+						$amount1 = $rowz2->amountz;
+						$cust = $rowz2->customerno;
+
+						$affected = DB::table('bs_period')
+									->where('bs_period.customerno', $cust)
+									->where('bs_period.period', $period)
+									->where('bs_period.trxh_id', $hid)
+									->update(['bs_period.previouspayment' => 'bs_period.previouspayment' + (double)$amount1]);
+
+						DB::table('bs_detail_period')->insert(
+							[
+								'CUSTOMERNO' => $cust,
+								'description' => "Payment PPh 23",
+								'amount' => $amount1 * -1,
+								'PERIOD' => $period,
+								'trxh_id' => $trxhid
+							]
+						);
+					}
+
+					//BALANCED ADJUSTMENT
+					$data3 = DB::table('trans')
+								->where(DB::raw('DATE_FORMAT(transactiondate,"%Y%m")'), $period2)
+								->where('transactioncode', 'B')
+								->where('customerno', '!=', null)
+								->where('customerno', $cust_no)
+								->select(DB::raw('SUM(amount) AS amountz'),'customerno')
+								->groupBy('customerno')
+								->get();
+
+					foreach($data3 as $rowz3)
+					{
+						$amount1 = $rowz3->amountz;
+						$cust = $rowz3->customerno;
+
+						$affected = DB::table('bs_period')
+									->where('bs_period.customerno', $cust)
+									->where('bs_period.period', $period)
+									->where('bs_period.trxh_id', $hid)
+									->update(['bs_period.balanceadjustment' => $amount1]);
+
+						DB::table('bs_detail_period')->insert(
+							[
+								'CUSTOMERNO' => $cust,
+								'description' => "Balance Correction",
+								'amount' => $amount1 * -1,
+								'PERIOD' => $period,
+								'trxh_id' => $trxhid
+							]
+						);
+					}
+
+					//TOTAL DISCOUNT
+					$data4 = DB::table('trans')
+								->where(DB::raw('DATE_FORMAT(transactiondate,"%Y%m")'), $period2)
+								->where('transactioncode', 'D')
+								->where('customerno', '!=', null)
+								->where('customerno', $cust_no)
+								->select(DB::raw('SUM(amount) AS amountz'),'customerno')
+								->groupBy('customerno')
+								->get();
+
+					foreach($data4 as $rowz4)
+					{
+						$amount1 = $rowz4->amountz;
+						$cust = $rowz4->customerno;
+
+						$affected = DB::table('bs_period')
+									->where('bs_period.customerno', $cust)
+									->where('bs_period.period', $period)
+									->where('bs_period.trxh_id', $hid)
+									->update(['bs_period.totaldiscount' => $amount1]);
+
+						DB::table('bs_detail_period')->insert(
+							[
+								'CUSTOMERNO' => $cust,
+								'description' => "Discount",
+								'amount' => $amount1 * -1,
+								'PERIOD' => $period,
+								'trxh_id' => $trxhid
+							]
+						);
+					}
+
+					//USAGE ADJUSTMENT
+					$data5 = DB::table('trans')
+								->where(DB::raw('DATE_FORMAT(transactiondate,"%Y%m")'), $period2)
+								->where('transactioncode', 'U')
+								->where('customerno', '!=', null)
+								->where('customerno', $cust_no)
+								->select(DB::raw('SUM(amount) AS amountz'),'customerno')
+								->groupBy('customerno')
+								->get();
+
+					foreach($data5 as $rowz5)
+					{
+						$amount1 = $rowz5->amountz;
+						$cust = $rowz5->customerno;
+
+						$affected = DB::table('bs_period')
+									->where('bs_period.customerno', $cust)
+									->where('bs_period.period', $period)
+									->where('bs_period.trxh_id', $hid)
+									->update(['bs_period.usageadjustment' => $amount1]);
+
+						DB::table('bs_detail_period')->insert(
+							[
+								'CUSTOMERNO' => $cust,
+								'description' => "Balance Correction",
+								'amount' => $amount1 * -1,
+								'PERIOD' => $period,
+								'trxh_id' => $trxhid
+							]
+						);
+					}
+
+
+					$delbsdetail4 = DB::table('bs_detail_period')->where('PERIOD', $period)->where('AMOUNT', 0)->delete();				
+
+					//1. Skip Tracing
+					//2. Screening Number
+					//3. Screening WA
+					//4. Paket 1 (Skip Tracing + Screening Number)
+					//5. Paket 2 (Skip Tracing + Screening WA)
+					//6. Paket 3 (Screening Number + Screening WA)
+					//7. Paket 4 (Skip Tracing + Screening Number + Screening WA)
+					$data1 		= DB::table('master_rates')->where('customerno', $cust_no)->select('product_paket_id','ratestypeid','non_std_basedon','non_std_basedon_wa')->get();
+					foreach ($data1 as $res1)
+					{
+						$product_paket_id	= $res1->product_paket_id;
+						$ratestypeid		= $res1->ratestypeid;
+						$non_std_basedon	= $res1->non_std_basedon;
+						$non_std_basedon_wa = $res1->non_std_basedon_wa;
+					}
+
+					if ($ratestypeid == 1)
+					{
+						//Ratetype : Standard
+						$data_a = DB::table('trx_screen_no_h')
+								->where('trx_screen_no_h.customerno', $cust_no)
+								->where(DB::raw('DATE_FORMAT(trx_screen_no_h.created_at,"%Y%m")'), $period2)
+								->where('ratestypeid', 1)
+								->where('trx_screen_no_h.fcompleted', 1)
+								//->where('master_rates.product_paket_id', $product_paket_id)
+								->join('master_rates', 'master_rates.customerno', '=', 'trx_screen_no_h.customerno')
+								->join('master_product_paket', 'master_product_paket.id', '=', 'master_rates.product_paket_id')
+								->select('trx_screen_no_h.id', 'trx_screen_no_h.customerno', DB::raw('CASE WHEN trx_screen_no_h.customerno is null THEN null WHEN master_rates.product_paket_id = 1 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 2 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_all_no_hp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 3 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_all_no_wa, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 4 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 5 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 6 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_all_no_hp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 7 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") END AS deskripsi'), DB::raw('CASE WHEN master_rates.product_paket_id = 1 THEN (trx_screen_no_h.jml_ktp * rates) WHEN master_rates.product_paket_id = 2 THEN (trx_screen_no_h.jml_all_no_hp * rates) WHEN master_rates.product_paket_id = 3 THEN (trx_screen_no_h.jml_all_no_wa * rates) WHEN master_rates.product_paket_id = 4 THEN (trx_screen_no_h.jml_ktp * rates) WHEN master_rates.product_paket_id = 5 THEN (trx_screen_no_h.jml_ktp * rates) WHEN master_rates.product_paket_id = 6 THEN (trx_screen_no_h.jml_all_no_hp * rates) WHEN master_rates.product_paket_id = 7 THEN (trx_screen_no_h.jml_ktp * rates) ELSE 0 END as total'))
+								->orderBy('trx_screen_no_h.id','ASC')
+								->get();
+								
+						//dd($data_a);
+					}
+					
+					if ($ratestypeid !== 1 && $non_std_basedon !== 0)
+					{
+						//Ratetype : Non Data Enrichment Standard --> Nomor yang live
+						$data_a = DB::table('trx_screen_no_h')
+								->where('trx_screen_no_h.customerno', $cust_no)
+								->where(DB::raw('DATE_FORMAT(trx_screen_no_h.created_at,"%Y%m")'), $period2)
+								->where('ratestypeid', '!=', 1)
+								->where('trx_screen_no_h.fcompleted', 1)
+								->where('non_std_basedon', '!=', 0)
+								//->where('master_rates.product_paket_id', $product_paket_id)
+								->join('master_rates', 'master_rates.customerno', '=', 'trx_screen_no_h.customerno')
+								->join('master_product_paket', 'master_product_paket.id', '=', 'master_rates.product_paket_id')
+								->select('trx_screen_no_h.id', 'trx_screen_no_h.customerno', DB::raw('CASE WHEN trx_screen_no_h.customerno is null THEN null WHEN master_rates.product_paket_id = 1 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 2 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_no_hp_valid, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 3 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_all_no_wa, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 4 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 5 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 6 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_no_hp_valid, 0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 7 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp, 0)," X Rp. ",FORMAT(rates,0),",- )") END AS deskripsi'), DB::raw('CASE WHEN master_rates.product_paket_id = 1 THEN (trx_screen_no_h.jml_ktp * rates) WHEN master_rates.product_paket_id = 2 THEN (trx_screen_no_h.jml_no_hp_valid * rates) WHEN master_rates.product_paket_id = 3 THEN (trx_screen_no_h.jml_all_no_wa * rates) WHEN master_rates.product_paket_id = 4 THEN ((trx_screen_no_h.jml_ktp + trx_screen_no_h.jml_no_hp_valid) * rates) WHEN master_rates.product_paket_id = 5 THEN ((trx_screen_no_h.jml_ktp + trx_screen_no_h.jml_all_no_wa) * rates) WHEN master_rates.product_paket_id = 6 THEN ((trx_screen_no_h.jml_no_hp_valid + trx_screen_no_h.jml_all_no_wa) * rates) WHEN master_rates.product_paket_id = 7 THEN ((trx_screen_no_h.jml_ktp + trx_screen_no_h.jml_no_hp_valid + trx_screen_no_h.jml_all_no_wa) * rates) ELSE 0 END as total'))
+								->orderBy('trx_screen_no_h.id','ASC')
+								->get();
+					}
+
+					if ($ratestypeid !== 1 && $non_std_basedon_wa !== 0)
+					{
+						//Ratetype : Non Data Enrichment Standard --> WA yang live
+						$data_a = DB::table('trx_screen_no_h')
+								->where('trx_screen_no_h.customerno', $cust_no)
+								->where(DB::raw('DATE_FORMAT(trx_screen_no_h.created_at,"%Y%m")'), $period2)
+								->where('ratestypeid', '!=', 1)
+								->where('trx_screen_no_h.fcompleted', 1)
+								->where('non_std_basedon_wa', '!=', 0)
+								//->where('master_rates.product_paket_id', $product_paket_id)
+								->join('master_rates', 'master_rates.customerno', '=', 'trx_screen_no_h.customerno')
+								->join('master_product_paket', 'master_product_paket.id', '=', 'master_rates.product_paket_id')
+								->select('trx_screen_no_h.id', 'trx_screen_no_h.customerno', DB::raw('CASE WHEN trx_screen_no_h.customerno is null THEN null WHEN master_rates.product_paket_id = 1 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp,0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 2 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_all_no_hp,0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 3 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_no_wa_valid,0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 4 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp,0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 5 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp,0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 6 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_all_no_hp,0)," X Rp. ",FORMAT(rates,0),",- )") WHEN master_rates.product_paket_id = 7 THEN CONCAT(product, " ", DATE_FORMAT(trx_screen_no_h.created_at,"%d-%m-%Y")," ( ",FORMAT(trx_screen_no_h.jml_ktp,0)," X Rp. ",FORMAT(rates,0),",- )") END AS deskripsi'), DB::raw('CASE WHEN master_rates.product_paket_id = 1 THEN (trx_screen_no_h.jml_ktp * rates) WHEN master_rates.product_paket_id = 2 THEN (trx_screen_no_h.jml_all_no_hp * rates) WHEN master_rates.product_paket_id = 3 THEN (trx_screen_no_h.jml_no_wa_valid * rates) WHEN master_rates.product_paket_id = 4 THEN (trx_screen_no_h.jml_ktp * rates) WHEN master_rates.product_paket_id = 5 THEN (trx_screen_no_h.jml_no_wa_valid * rates) WHEN master_rates.product_paket_id = 6 THEN (trx_screen_no_h.jml_no_wa_valid * rates) WHEN master_rates.product_paket_id = 7 THEN (trx_screen_no_h.jml_ktp * rates) ELSE 0 END as total'))
+								->orderBy('trx_screen_no_h.id','ASC')
+								->get();
+					}
+
+					foreach($data_a as $row_a)
+					{
+						$amount1 = $row_a->total;
+						$cust = $row_a->customerno;
+						$deskripsi = $row_a->deskripsi;
+						$trxhid = $row_a->id;
+
+						DB::table('bs_detail_period')->insert(
+							[
+								'customerno' => $cust,
+								'description' => $deskripsi,
+								'amount' => $amount1,
+								'period' => $period,
+								'period_service' => $periodsrvls,
+								'prss_id' => 17,
+								'trxh_id' => $trxhid
+							]
+						);
+					}
+
+
+					//TOTAL USAGE
+					$data12 = DB::table('bs_detail_period')
+								->where('period', $period)
+								->where('prss_id', '>', 0)
+								->where('customerno', '!=', null)
+								->where('customerno', $cust_no)
+								->select('trxh_id', DB::raw('ROUND(amount,0) AS monthly'), 'customerno')
+								->orderBy('trxh_id')
+								->get();
+
+					foreach($data12 as $rowz12)
+					{
+						$trxhid		= $rowz12->trxh_id;
+						$monthly	= $rowz12->monthly;
+						$cust		= $rowz12->customerno;
+
+						$qry1 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->where('bs_period.trxh_id', $trxhid) 
+								->update(['bs_period.totalusage' => $monthly]);
+
+						$qry2 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->where('bs_period.trxh_id', $trxhid) 
+								->update(['bs_period.totalamount' => $monthly]);
+
+						$qry3 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->where('bs_period.trxh_id', $trxhid) 
+								->update(['bs_period.duedate' => $duedate]);
+
+						$qry4 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->where('bs_period.trxh_id', $trxhid) 
+								->update(['bs_period.newstatementdate' => $newstatementdate]);
+
+						$qry5 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->where('bs_period.trxh_id', $trxhid) 
+								->update(['bs_period.laststatementdate' => $laststatementdate]);
+
+						$qry6 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->where('bs_period.trxh_id', $trxhid) 
+								->update(['bs_period.paymentdatevat' => $paymentdatevat]);
+
+						//TOTAL VAT
+						$qryvat = DB::select("CALL sp_bs_period_vat('".$cust_no."', '".$period."', '".$trxhid."');");
+
+						
+						//PPN bs_detail_period
+						$data17 = DB::table('bs_period')
+								->where('PERIOD', $period)
+								->where('TOTALVAT', '>', '0')
+								->where('CUSTOMERNO', $cust_no)
+								->where('TRXH_ID', $trxhid)
+								->select('CUSTOMERNO', 'TOTALVAT', 'PERIOD')
+								->get();
+						//dd($data17);
+
+						foreach($data17 as $rowz17)
+						{
+							$period = $rowz17->PERIOD; 
+							$deskripsi = "PPN"; 
+							$vat = $rowz17->TOTALVAT; 
+							$cust = $rowz17->CUSTOMERNO; 
+							
+							DB::table('bs_detail_period')->insert(
+								[
+									'CUSTOMERNO' => $cust,
+									'description' => $deskripsi,
+									'amount' => $vat,
+									'PERIOD' => $period,
+									'TRXH_ID' => $trxhid
+								]
+							);
+						}
+					}
+
+					//PREVIOUS BALANCE
+					$data14 = DB::table('bs_period')
+								->where('bs_period.period', $period2)
+								->where('bs_period.customerno', $cust_no)
+								->select('id', DB::raw('(previousbalance-previouspayment+(totalamount+totalvat)-balanceadjustment-usageadjustment-totaldiscount) AS amountdue'), 'bs_period.customerno')
+								->get();
+
+					foreach($data14 as $rowz14)
+					{
+						$amountdue = $rowz14->amountdue;
+						$cust = $rowz14->customerno;
+
+						$qry1 = DB::table('bs_period')
+								->where('bs_period.customerno', $cust)
+								->where('bs_period.period', $period)
+								->update(['bs_period.previousbalance' => $amountdue]);
+					}
+
+				}
+            }
+			
+			/*
+            $query1 = DB::table('master_maintenance_all')
+                    ->where('id', $id)
+                    ->where('period', DB::raw('DATE_FORMAT(CURDATE(),"%Y%m")'))
+                    ->where('flag', 1)
+                    ->where('crtby', $userid)
+                    ->update(['end_time' => Carbon::now('Asia/Jakarta')->toDateTimeString()]);
+
+            $query2 = DB::table('master_maintenance_all')
+                    ->where('id', $id)
+                    ->where('period', DB::raw('DATE_FORMAT(CURDATE(),"%Y%m")'))
+                    ->where('flag', 1)
+                    ->where('crtby', $userid)
+                    ->update(['updby' => $userid]);
+
+            $query3 = DB::table('master_maintenance_all')
+                    ->where('id', $id)
+                    ->where('period', DB::raw('DATE_FORMAT(CURDATE(),"%Y%m")'))
+                    ->where('flag', 1)
+                    ->where('crtby', $userid)
+                    ->update(['upddate' => Carbon::now('Asia/Jakarta')->toDateTimeString()]);
+
+            $query4 = DB::table('master_maintenance_all')
+                    ->where('id', $id)
+                    ->where('period', DB::raw('DATE_FORMAT(CURDATE(),"%Y%m")'))
+                    ->where('flag', 1)
+                    ->where('crtby', $userid)
+                    ->update(['flag' => 2]);
+			*/
+
+            //exit;
+            $time = microtime();
+            $time = explode(' ', $time);
+            $time = $time[1] + $time[0];
+            $finish = $time;
+            $total_time = round(($finish - $start), 2);
+
+			return response()->json(['success' => $total_time]);
+        }
+        else
+        {
+			header("cache-Control: no-store, no-cache, must-revalidate");
+			header("cache-Control: post-check=0, pre-check=0", false);
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+			Auth::logoutOtherDevices(Session::get('userid'));
+			Auth::logoutOtherDevices(Session::get('realname'));
+			Auth::logoutOtherDevices(Session::get('email'));
+			Auth::logoutOtherDevices(Session::get('username'));
+			Auth::logoutOtherDevices(Session::get('company_id'));
+			Auth::logoutOtherDevices(Session::get('departemen_id'));
+			Auth::logoutOtherDevices(Session::get('departemen'));
+			Auth::logoutOtherDevices(Session::get('sex'));
+			Auth::logoutOtherDevices(Session::get('login'));
+			
+			session()->forget('userid');
+			session()->forget('realname');
+			session()->forget('email');
+			session()->forget('username');
+			session()->forget('company_id');
+			session()->forget('departemen_id');
+			session()->forget('departemen');
+			session()->forget('sex');
+			session()->forget('login');
+		
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+            return redirect('http://192.168.100.115/app-portal/exit')->with('alert','You were Logout');
+			echo "<script>window.close();</script>";
+        }
+    }
+	
+	/*
+    public function compares(Request $request, $period)
+    {
+        //dd($period);
+        if ($request->ajax()) 
+        {
+            $data = DB::select("CALL sp_compare_pasca_maintenance_all('".$period."');");
+            //$data= collect($data);
+            return Datatables::of($data)
+            ->addIndexColumn()
+            ->make(true);
+        }
+    }
+	*/
+}

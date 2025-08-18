@@ -1,0 +1,9 @@
+.company-information {
+
+}
+
+.company-information label {
+    display: block;
+    color: #b5b5c3 !important;
+    margin-bottom: 3px;
+}

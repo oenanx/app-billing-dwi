@@ -1,0 +1,208 @@
+<?php
+namespace App\Http\Controllers;
+
+use App\Models\Mod_login;
+use App\Mail\SentMail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use GuzzleHttp\Client;
+
+class Home extends Controller
+{
+    public function index()
+    {
+        return view('templates.login');
+    }
+
+    public function forget()
+    {
+        return view('templates.forget');
+    }
+
+    public function home()
+    {
+		if(Session::get('userid'))
+		{
+			return view('home.dashboard.home_user');
+		}
+		else
+		{
+			//jika session belum terdaftar, maka redirect ke halaman login
+			session()->forget('userid');
+			session()->forget('username');
+			session()->forget('realname');
+			session()->forget('divisi_name');
+			session()->forget('pass1');
+			session()->forget('company_id');
+			session()->forget('company_name');
+			session()->forget('parentchild');
+			session()->forget('login');
+
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('/')->with('alert','You were Logout');
+			}
+    }
+
+	public function resetpasswd(Request $request)
+	{
+		$request->validate([
+            'useremail' => ['required', 'email:dns']
+        ]);
+		
+		//Cek dahulu email yang di input valid atau tidak.
+		$username = $request->useremail;
+		//dd($username);
+		
+		$data = DB::connection('mysql3')->table('master_user')
+				->where('master_user.email', $username)
+				->where('master_user.IsActive', 1)
+				->select('email')
+				->distinct()
+				->first();
+		//dd($data->username);
+		
+		if($data)
+		{
+			$passwdnew 			= Str::random(12);
+			$passwordnew 		= Hash::make($passwdnew);
+			$current_date_time 	= date('Y-m-d H:i:s');
+			
+			DB::connection('mysql3')->table('master_user')
+				->where('master_user.email', $username)
+				->where('master_user.IsActive', 1)
+				->update(
+					[
+						'password' => $passwordnew,
+						'passwd' => $passwdnew,
+						'update_at' => $current_date_time,
+					]);
+					
+			//Kirim password baru ke email.
+			$details = [
+				'title' => 'Reset Password Roboblast Application',
+				'body' => 'This is your new Password : '.$passwdnew
+			];
+		   
+			Mail::to($username)->send(new \App\Mail\SentMail($details));
+
+			
+			return redirect('/')->with('alert','Please check your email, we sent your new password at your email !');
+			
+		}
+		else 
+		{
+			return redirect( url('forget') )->with('alert','Username is not Valid !');
+		}
+	}
+	
+    public function authenticate(Request $request)
+    {
+		$request->validate([
+            'username' => ['required', 'email:dns'],
+            'password' => ['required'],
+			'captcha'  => 'required|captcha'
+        ]);
+
+		//get data dari FORM
+		$username = $request->username;
+		$password = $request->password;
+
+		$data = DB::connection('mysql3')->table('master_user')
+				->where('master_user.email', $username)
+				->where('master_user.IsActive', 1)
+				->join('master_company', 'master_company.id', '=', 'master_user.company_id')
+				->select('master_user.id','email','realname','departemen','password','pword','customerno','company_name')
+				->distinct()
+				->first();
+		//dd($data);
+		
+		if($data)
+		{
+			if(Hash::check($password,$data->password))
+			{
+				//$request->session()->regenerate();
+
+				//dd(Hash::check($password,$data->passwd));
+				Session::put('userid',$data->id);
+				Session::put('username',$data->email);
+				Session::put('realname',$data->realname);
+				Session::put('divisi_name',$data->departemen);
+				Session::put('pass1',$data->pword);
+				Session::put('company_id',$data->customerno);
+				Session::put('company_name',$data->company_name);
+				Session::put('login',TRUE);
+
+				$company_id = Session::get('company_id');
+				$username = Session::get('username');
+	
+				return view('home.dashboard.home_user');
+			} 
+			else
+			{
+				session()->flush();
+				Auth::logout();
+				DB::disconnect('mysql');
+
+				return redirect('/')->with('alert','Username or Password, Incorrect !');
+			}
+		}
+		else
+		{
+			session()->flush();
+			Auth::logout();
+			DB::disconnect('mysql');
+
+			return redirect('/')->with('alert','Username is not Valid !');
+		}
+	}
+
+    public function reloadCaptcha()
+    {
+        return response()->json(['captcha'=> captcha_img()]);
+    }
+	
+    public function logout()
+    {
+		header("cache-Control: no-store, no-cache, must-revalidate");
+		header("cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+		Auth::logoutOtherDevices(Session::get('userid'));
+		Auth::logoutOtherDevices(Session::get('username'));
+		Auth::logoutOtherDevices(Session::get('realname'));
+		Auth::logoutOtherDevices(Session::get('divisi_name'));
+		Auth::logoutOtherDevices(Session::get('pass1'));
+		Auth::logoutOtherDevices(Session::get('company_id'));
+		Auth::logoutOtherDevices(Session::get('company_name'));
+		Auth::logoutOtherDevices(Session::get('parentchild'));
+		Auth::logoutOtherDevices(Session::get('login'));
+		
+		session()->forget('userid');
+		session()->forget('username');
+		session()->forget('realname');
+		session()->forget('divisi_name');
+		session()->forget('pass1');
+		session()->forget('company_id');
+		session()->forget('company_name');
+		session()->forget('parentchild');
+		session()->forget('login');
+	
+		session()->flush();
+		Auth::logout();
+		DB::disconnect('mysql');
+
+        return redirect('/')->with('alert','You were Logout');
+    }
+
+}
+?>
