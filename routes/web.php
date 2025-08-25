@@ -83,7 +83,7 @@ Route::group(['middleware' => 'prevent-back-history'],function()
     Route::post('M_Trial/datatable', [\App\Http\Controllers\M_Trial::class, 'index'])->name('M_Trial.datatable');
     Route::get('M_Trial/view_data/{id}', [\App\Http\Controllers\RegistrationTrial::class, 'view_cust']);
     Route::get('M_Trial/view_rates/{id}', [\App\Http\Controllers\RegistrationTrial::class, 'view_rates']);
-    Route::post('RegistrationTrial/view_services/{id}', [\App\Http\Controllers\RegistrationTrial::class, 'view_services']);
+    Route::get('RegistrationTrial/view_services/{id}', [\App\Http\Controllers\RegistrationTrial::class, 'view_services']);
 	Route::get('RegistrationTrial/view_usage/{id}', [\App\Http\Controllers\RegistrationTrial::class, 'view_usage']);
 	Route::post('RegistrationTrial/datatableusage/{params}', [\App\Http\Controllers\RegistrationTrial::class, 'datatableusage']);
 	Route::get('RegistrationTrial/downloadlog/{params}', [\App\Http\Controllers\RegistrationTrial::class, 'downloadlog']);

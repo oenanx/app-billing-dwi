@@ -50,10 +50,10 @@ class M_Trial extends Controller
 
 				$data = QueryBuilder::for(Mod_Company::class)
 						->where('master_company.fapi', 1)
-						->where('master_company.active', 2)
+						->whereIn('master_company.active', [0, 2])
 						->join('salesagent', 'salesagent.SALESAGENTCODE', '=', 'master_company.SALESAGENTCODE')	
-						->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
-						->select('master_company.id','master_company.customerno','company_name','SALESAGENTNAME','activation_date','notes',DB::raw('(master_company.active) as factive'),DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" ELSE "Terminated" END) as active'),'master_product_api_customer.end_trial')
+						//->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
+						->select('master_company.id','master_company.customerno','company_name','SALESAGENTNAME','activation_date','notes',DB::raw('(master_company.active) as factive'),DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" ELSE "Terminated" END) as active'))
 						->distinct()
 						->orderBy('master_company.id','DESC')
 						->allowedFilters(

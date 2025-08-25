@@ -227,10 +227,23 @@
 				<div id="modal-loader" style="display: none; text-align: center;">
                     <img src="{{ asset('images/ajax-loader.gif') }}">
 				</div>
-						
+				<!--		
 				<div class="datatable datatable-bordered datatable-head-custom" id="Show-TablesPrd" style="width:100%; font-size: 8pt; height: auto;">
 
 				</div>
+				-->
+				<table class="table table-bordered table-hover" id="Show-TablesPrd" style="font-size:12pt; width:100%;">
+					<thead bgcolor="#ffdcdc" align="center">
+						<tr>
+							<th><center>API Name</center></th>
+							<th><center>Rates (Rp. )</center></th>
+							<th><center>Quota (Hits)</center></th>
+							<th><center>Used Quota (Hits)</center></th>
+							<th><center>Start Trial</center></th>
+							<th><center>End Trial</center></th>
+						</tr>
+					</thead>
+				</table>
 
 			</div>
 			<div class="modal-footer">
@@ -338,7 +351,7 @@ $(document).ready(function()
 		{
 			field: 'company_name',
 			sortable: true,
-			width: 360,
+			width: 240,
 			title: '<p style="font-size:12px; text-align:center;">Company Name</p>',
 			template: function(row) {
 				return '<p style="font-size:12px;">'+row.company_name+'</p>';
@@ -347,27 +360,27 @@ $(document).ready(function()
 		{
 			field: 'SALESAGENTNAME',
 			sortable: false,
-			width: 100,
+			width: 160,
             textAlign: 'center',
 			title: '<p style="font-size:12px; text-align:center;">Sales Name</p>',
 			template: function(row) {
 				return '<p style="font-size:12px;">'+row.SALESAGENTNAME+'</p>';
 			}
 		},
-		{
-			field: 'end_trial',
-			sortable: false,
-			width: 120,
-            textAlign: 'center',
-			title: '<p style="font-size:12px; text-align:center;">End Trial</p>',
-			template: function(row) {
-				return '<p style="font-size:12px;">'+row.end_trial+'</p>';
-			}
-		},
+		//{
+		//	field: 'end_trial',
+		//	sortable: false,
+		//	width: 120,
+        //    textAlign: 'center',
+		//	title: '<p style="font-size:12px; text-align:center;">End Trial</p>',
+		//	template: function(row) {
+		//		return '<p style="font-size:12px;">'+row.end_trial+'</p>';
+		//	}
+		//},
 		{
 			field: 'active',
 			sortable: false,
-			width: 60,
+			width: 80,
             textAlign: 'center',
 			title: '<p style="font-size:12px; text-align:center;">Status</p>',
             template: function(row) {
@@ -375,11 +388,11 @@ $(document).ready(function()
 
                 if (datas == "Trial")
                 {
-                    return '<p style="font-size:12px;background-color: lightgreen;">Live</p>';
+                    return '<p style="font-size:12px; background-color: lightgreen;">Trial</p>';
                 }
-                else
+                else if (datas == "Terminated")
                 {
-                    return '<p style="font-size:12px;background-color: lightred;">Terminated</p>';
+                    return '<p style="font-size:12px; background-color: #F2795E;">Terminated</p>';
                 }
             }
 		},
@@ -407,14 +420,14 @@ $(document).ready(function()
 							<li style="font-size:9pt;>\
 								<a href="javascript:void(0)" class="dropdown-item viewSvs" data-id="'+row.customerno+'" title="View API Services">\
 									<span class="svg-icon svg-icon-primary svg-icon-2x">\
-										<i class="flaticon-eye icon-md"></i>&nbsp;&nbsp;&nbsp;View API Services\
+										<i class="flaticon-eye icon-md"></i>&nbsp;View API Services\
 									</span>\
 								</a>\
 							</li>\
 							<li style="font-size:9pt;>\
 								<a href="javascript:void(0)" class="dropdown-item viewUsage" data-id="'+row.customerno+'" title="View Usages">\
 									<span class="svg-icon svg-icon-primary svg-icon-2x">\
-										<i class="flaticon-eye icon-md"></i>&nbsp;&nbsp;&nbsp;View Usages\
+										<i class="flaticon-eye icon-md"></i>&nbsp;View Usages\
 									</span>\
 								</a>\
 							</li>\
@@ -476,7 +489,8 @@ $('body').on('click', '.viewSvs', function ()
 	$('.help-block').empty(); // clear error string
 	$('.modal-dialog').css({width:'100%',height:'100%', 'max-height':'100%'});
 	$('#modelHeading1').html("View Detail API Services");
-
+	
+	/*
 	var dataTablePrd = $('#Show-TablesPrd').KTDatatable(
 	{
 		// datasource definition
@@ -530,13 +544,13 @@ $('body').on('click', '.viewSvs', function ()
 		columns: [
 		{
 			field: 'product',
-			width: 25,
+			width: 30,
 			textAlign: 'left',
 			title: '<p style="font-size:12px; text-align:center;">API Name</p>',
 		},
 		{
 			field: 'rates',
-			width: 15,
+			width: 10,
 			textAlign: 'right',
 			title: '<p style="font-size:12px; text-align:center;">Rates (Rp.)</p>',
 		},
@@ -565,7 +579,36 @@ $('body').on('click', '.viewSvs', function ()
 			title: '<p style="font-size:12px; text-align:center;">End Trial</p>',
 		}],
 	});
-	
+	*/
+		
+    var dataTablePrd = $('#Show-TablesPrd').DataTable(
+    {
+        destroy: true,
+        processing: true,
+        serverSide: true,
+        //pagingType: "simple_numbers",
+        autoWidth: true,
+        paginate: false,
+        language: 
+        { 
+            processing: "Mohon tunggu sebentar sedang memproses data..."
+        },
+        ajax: "{{ url('RegistrationTrial/view_services') }}"+'/'+id,
+        columns: [
+            {data: 'product', className: 'text-left', name: 'product'},
+            {data: 'rates', className: 'text-right', name: 'rates'},
+            {data: 'quota', className: 'text-right', name: 'quota'},
+            {data: 'remainquota', className: 'text-right', name: 'remainquota'},
+            {data: 'start_trial', className: 'text-center', name: 'start_trial'},
+            {data: 'end_trial', className: 'text-center', name: 'end_trial'},
+        ],
+        order: [[ 0, "asc" ]],
+		scrollCollapse: true,
+		//scrollY: "300px",
+		bInfo : false,
+		dom: "rtip"
+    });
+
 	$('#view-modal-services').modal('show');
 });
 

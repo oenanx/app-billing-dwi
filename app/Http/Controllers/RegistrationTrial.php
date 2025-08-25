@@ -35,6 +35,8 @@ use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Maatwebsite\Excel\Facades\Excel;
+use Yajra\Datatables\Datatables;
+
 
 class RegistrationTrial extends Controller
 {
@@ -937,6 +939,7 @@ class RegistrationTrial extends Controller
     {
         if(Session::get('userid'))
         {
+			/*
 			$sales  = DB::table('salesagent')
 						->where('STATUS', 1)
 						->select('SALESAGENTCODE','SALESAGENTNAME')
@@ -951,10 +954,46 @@ class RegistrationTrial extends Controller
             $data1['groups'] = DB::select('SELECT DISTINCT ID id, PARENT_CUSTOMER parent from billing_ats.customer_parent ORDER BY PARENT_CUSTOMER DESC;');
 
             $data1['paymethod'] = DB::select('select PAYMENTCODE,PAYMENTMETHOD from billing_ats.paymentmethod ORDER BY PAYMENTCODE;');
+			*/
+			$updated_by		= $request->create_by;
+			$updated_at 	= date('Y-m-d H:i:s');
 
+			$servis	= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $id)->orderby('product_api_id', 'ASC')->get();
+			foreach ($servis as $s)
+			{
+				$productid	= $s->product_api_id;
+				//$fstatus	= $s->fstatus;
+				$rates		= $s->rates;
+				$usedquota	= $s->remainquota;
+				$end_trial	= $s->end_trial;
+
+				DB::table('master_product_api_customer')
+					->where('customerno', $id)
+					->where('product_api_id', $productid)
+					->update([
+								'rates' => $rates, 
+								'remainquota' => $usedquota, 
+								'end_trial' => $end_trial, 
+								'updated_by' => $updated_by, 
+								'updated_at' => $updated_at
+							]);
+
+				DB::connection('mysql_3')->table('master_product_api_customer')
+					->where('customerno', $id)
+					->where('product_api_id', $productid)
+					->update([
+								'rates' => $rates, 
+								'remainquota' => $usedquota, 
+								'end_trial' => $end_trial, 
+								'updated_by' => $updated_by, 
+								'updated_at' => $updated_at
+							]);
+			}
+			
 			if ($request->ajax()) 
 			{
-				$data = QueryBuilder::for(Mod_ProductsApi::class)   //DB::table('master_product_api_customer')
+				//$data = QueryBuilder::for(Mod_ProductsApi::class)   
+				$data = DB::table('master_product_api_customer')
 						->where('master_company.fapi', 1)
 						->where('master_company.customerno', $id)
 						->where('master_company.billingtype', 1)
@@ -962,13 +1001,18 @@ class RegistrationTrial extends Controller
 						->join('master_product_api', 'master_product_api.id', '=', 'master_product_api_customer.product_api_id')	
 						->select('master_product_api_customer.product_api_id','master_product_api.product','master_product_api_customer.rates','master_product_api_customer.quota','master_product_api_customer.remainquota','master_product_api_customer.start_trial','master_product_api_customer.end_trial')
                         ->orderBy('product_api_id','ASC')
-						->paginate($request->query('perpage', 10000000))
-						->appends(request()->query());
+						//->paginate($request->query('perpage', 10000000))
+						//->appends(request()->query());
 
-				return response()->json($data);
+				//return response()->json($data);
+						->get();
+
+                return Datatables::of($data)
+                ->addIndexColumn()
+                ->make(true);
 			}
 
-			return view('home.registrasitrial.registrasi', compact('sales','produk','totaldata'))->with($data1);
+			//return view('home.registrasitrial.registrasi', compact('sales','produk','totaldata'))->with($data1);
         }
         else
         {
