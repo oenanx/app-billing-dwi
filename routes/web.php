@@ -185,7 +185,7 @@ Route::group(['middleware' => 'prevent-back-history'],function()
 	
     Route::get('InquiryApi/index', [\App\Http\Controllers\InquiryApi::class, 'index']);
     Route::post('InquiryApi/datatable', [\App\Http\Controllers\InquiryApi::class, 'index']);
-    Route::post('InquiryApi/bsprepaid/{id}', [\App\Http\Controllers\ViewBSPrepaid::class, 'bs']);
+    Route::get('InquiryApi/bsprepaid/{id}', [\App\Http\Controllers\ViewBSPrepaid::class, 'bs']);
     Route::post('InquiryApi/payprepaid/{id}', [\App\Http\Controllers\ViewBSPrepaid::class, 'pay']);
     Route::get('InquiryApi/bspostpaid/{id}', [\App\Http\Controllers\ViewBSPostpaid::class, 'bs']);
     Route::post('InquiryApi/paypostpaid/{id}', [\App\Http\Controllers\ViewBSPostpaid::class, 'pay']);
@@ -213,6 +213,7 @@ Route::group(['middleware' => 'prevent-back-history'],function()
     Route::get('PaymentPrepaid/delete/{id}', [\App\Http\Controllers\PaymentPrepaid::class, 'delete']);
 	
     Route::get('PaymentPostpaid/index', [\App\Http\Controllers\PaymentPostpaid::class, 'index']);
+	Route::post('PaymentPostpaid/datatables', [\App\Http\Controllers\PaymentPostpaid::class, 'datatables']);
     Route::get('PaymentPostpaid/view_detail/{id}', [\App\Http\Controllers\PaymentPostpaid::class, 'view_detail']);
 	Route::post('PaymentPostpaid/Datatable/{id}', [\App\Http\Controllers\PaymentPostpaid::class, 'view_detail']);
 	Route::post('InsertPaymentPostpaid', [\App\Http\Controllers\PaymentPostpaid::class, 'insert']);

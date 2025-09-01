@@ -26,8 +26,9 @@ class ViewBSPrepaid extends Controller
 			{
                 //$data = QueryBuilder::for(M_BSPrepaid::class)  //DB::table('bs')
 				$data = DB::table('bs_prepaid')
-                        ->where('master_company_api.id', $id)
-						->join('master_company_api', 'master_company_api.customerno', '=', 'bs_prepaid.CUSTOMERNO')
+						->where('fapi', 1)
+                        ->where('master_company.id', $id)
+						->join('master_company', 'master_company.customerno', '=', 'bs_prepaid.CUSTOMERNO')
                         ->select('BSNO', 'PERIOD', DB::raw('FORMAT(PREVIOUSBALANCE,0) AS PREVIOUSBALANCE'), DB::raw('FORMAT(PREVIOUSPAYMENT,0) AS PREVIOUSPAYMENT'), DB::raw('FORMAT(BALANCEADJUSTMENT,0) AS BALANCEADJUSTMENT'), DB::raw('FORMAT(TOTALUSAGE,0) AS TOTALUSAGE'), DB::raw('FORMAT((TOTALVAT-USAGEADJUSTMENT-TOTALDISCOUNT+TOTALUSAGE),0) as NEWCHARGE'), DB::raw('FORMAT((PREVIOUSBALANCE-PREVIOUSPAYMENT-BALANCEADJUSTMENT+TOTALVAT-USAGEADJUSTMENT-TOTALDISCOUNT+TOTALAMOUNT),0) as AMOUNTDUE'))
                         ->orderBy('PERIOD','ASC')
 						//->allowedFilters(
@@ -89,8 +90,9 @@ class ViewBSPrepaid extends Controller
 			if ($request->ajax()) 
 			{
                 $data = QueryBuilder::for(Mod_PaymentPrepaid::class)  //DB::table('trans_prepaid')
-                        ->where('master_company_api.id', $id)
-						->join('master_company_api', 'master_company_api.customerno', '=', 'trans_prepaid.CUSTOMERNO')
+						->where('fapi', 1)
+                        ->where('master_company.id', $id)
+						->join('master_company', 'master_company.customerno', '=', 'trans_prepaid.CUSTOMERNO')
 						->join('paymentmethod', 'paymentmethod.PAYMENTCODE', '=', 'trans_prepaid.PAYMENTCODE')
                         ->select('trans_prepaid.CUSTOMERNO', DB::raw('DATE_FORMAT(entrydate,"%Y-%m-%d") AS ENTRYDATE'), DB::raw('DATE_FORMAT(transactiondate,"%Y-%m-%d") AS TRANSDATE'), DB::raw('CASE WHEN TRANSACTIONCODE = "P" THEN "PAYMENT" WHEN TRANSACTIONCODE = "B" THEN "BALANCED ADJUSTMENT" WHEN TRANSACTIONCODE = "D" THEN "DISCOUNT" WHEN TRANSACTIONCODE = "U" THEN "USAGE ADJUSTMENT" WHEN TRANSACTIONCODE = "R" THEN "REFUND" END AS TRANSCODE'), DB::raw('CONCAT("Rp. ", FORMAT(amount,0)) AS AMOUNT'), 'trans_prepaid.paymentcode', DB::raw('paymentmethod.PAYMENTMETHOD AS PAYMETHOD'), 'info',DB::raw('CASE WHEN receiptno IS NULL THEN "-" ELSE receiptno END AS RECEIPTNO'),'settlement_status')
                         ->orderBy('ENTRYDATE','DESC')

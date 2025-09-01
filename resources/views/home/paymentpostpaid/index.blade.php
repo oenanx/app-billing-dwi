@@ -157,7 +157,7 @@ $(document).ready(function()
 			type: 'remote',
 			source: {
 				read: {
-					url: '{{ url('InquiryApi/datatable') }}',
+					url: '{{ url('PaymentPostpaid/datatables') }}',
 					// sample custom headers
 					// headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
 					map: function(raw) {
