@@ -81,7 +81,7 @@ return [
         'mysql_3' => [
             'driver' => env('DB_CONNECTION_3'),
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST_3', '192.168.100.117'),
+            'host' => env('DB_HOST_3', '192.168.100.101'),
             'port' => env('DB_PORT_3', '3306'),
             'database' => env('DB_DATABASE_3', 'data_whiz_app'),
             'username' => env('DB_USERNAME_3', 'userAPP'),

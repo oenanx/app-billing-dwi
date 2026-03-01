@@ -289,25 +289,25 @@ $(document).ready(function()
 				return '<span style="font-size:12px;">'+row.SALESAGENTNAME+'</span>';
 			}
 		},
-		{
-			field: 'tipebilling',
-			sortable: true,
-			width: 100,
-			textAlign: 'center',
-			title: '<span style="font-size:12px;">Billing Type</span>',
-			template: function(row) {
-				var tipe = row.tipebilling;
+		//{
+		//	field: 'tipebilling',
+		//	sortable: true,
+		//	width: 100,
+		//	textAlign: 'center',
+		//	title: '<span style="font-size:12px;">Billing Type</span>',
+		//	template: function(row) {
+		//		var tipe = row.tipebilling;
 
-				if (tipe == "PREPAID")
-				{
-					return '<span class="label font-weight-bold label-lg label-light-info label-inline" style="font-size:12px;">PREPAID</span>';
-				}
-				else if (tipe == "POSTPAID")
-				{
-					return '<span class="label font-weight-bold label-lg label-light-success label-inline" style="font-size:12px;">POSTPAID</span>';
-				}
-			}
-		},
+		//		if (tipe == "PREPAID")
+		//		{
+		//			return '<span class="label font-weight-bold label-lg label-light-info label-inline" style="font-size:12px;">PREPAID</span>';
+		//		}
+		//		else if (tipe == "POSTPAID")
+		//		{
+		//			return '<span class="label font-weight-bold label-lg label-light-success label-inline" style="font-size:12px;">POSTPAID</span>';
+		//		}
+		//	}
+		//},
 		{
 			field: 'active',
 			sortable: false,
@@ -345,6 +345,7 @@ $(document).ready(function()
 			autoHide: false,
 			template: function(row) 
 			{
+				/*
 				if (row.billingtype == 1)
 				{
 					return '<div class="btn-group">\
@@ -368,8 +369,8 @@ $(document).ready(function()
 								</ul>\
 							</div>';
 				}
-
-				if (row.billingtype == 2)
+				*/
+				if (row.active == "Active")
 				{
 					return '<div class="btn-group">\
 								<button type="button" class="btn btn-sm btn-hover-light-primary mr-1 dropdown-toggle" data-toggle="dropdown" aria-expanded="false">\
@@ -378,19 +379,30 @@ $(document).ready(function()
 									<li style="font-size:9pt;>\
 										<a href="javascript:void(0)" class="dropdown-item viewBSPostpaid" data-id="'+row.id+'" title="View Billing Statement">\
 											<span class="svg-icon svg-icon-primary svg-icon-2x">\
-												<i class="fa fa-tags icon-lg"></i>\
-											</span>&nbsp;View BS Postpaid\
+												<i class="fa fa-tags icon-md"></i>&nbsp;&nbsp;&nbsp;View BS Postpaid\
+											</span>\
 										</a>\
 									</li>\
 									<li style="font-size:9pt;>\
 										<a href="javascript:void(0)" class="dropdown-item viewPayPostpaid" data-id="'+row.id+'" title="View Payment">\
 											<span class="svg-icon svg-icon-primary svg-icon-2x">\
-												<i class="flaticon-coins icon-lg"></i>\
-											</span>&nbsp;View Payment Postpaid\
+												<i class="flaticon-coins icon-md"></i>&nbsp;&nbsp;&nbsp;View Payment Postpaid\
+											</span>\
+										</a>\
+									</li>\
+									<li style="font-size:9pt;>\
+										<a href="javascript:void(0)" class="dropdown-item viewUsagePostpaid" data-id="'+row.customerno+'" title="View Log Usage">\
+											<span class="svg-icon svg-icon-primary svg-icon-2x">\
+												<i class="flaticon-eye icon-md"></i>&nbsp;&nbsp;&nbsp;View Log Usage\
+											</span>\
 										</a>\
 									</li>\
 								</ul>\
 							</div>';
+				}
+				else
+				{
+					return '';
 				}
 			},
 		}],
@@ -848,6 +860,15 @@ $('body').on('click', '.viewPayPrepaid', function(e)
 	});
 
 	$('#view-modal-pay-prepaid').modal('show');
+});
+
+$('body').on('click', '.viewUsagePostpaid', function () 
+{
+	var id = $(this).data("id");
+	$('.help-block').empty(); // clear error string
+	$('.modal-dialog').css({width:'100%',height:'100%', 'max-height':'100%'});
+	
+	window.open("{{ url('InquiryApi/view_usage') }}"+'/'+id);
 });
 
 </script>	

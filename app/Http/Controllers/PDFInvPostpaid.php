@@ -40,18 +40,21 @@ class PDFInvPostpaid extends Controller
             $bs_period  = $request->thn.$request->month;
             //dd($custno);
 
-            if ($custno != "" || $custno != null)
+            if (!is_null($custno) || $custno != "" || $custno != null)
             {
 				//Jika customerno tidak kosong.
 				$this->fpdf = new Fpdf;
 
                 $customer = Mod_Company::query()
 							->where('fapi', 1)
-							->where('master_company.billingtype', 2)
-                            ->where('customerno', $custno)
-                            ->select('customerno', 'company_name','address','address2','address3','address4','address5','zipcode','phone_fax','npwpno')
+							->where('billingtypes', 2)
+                            ->where('master_company.customerno', $custno)
+							->whereNotIn('master_company.customerno', ["DWH00000020C","DWH00000056C","DWH00000058C","DWH00000071C","DWH00000072C","DWH00000077R","DWH00000078R","DWH00000079R"])
+							->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
+                            ->select('master_company.customerno', 'company_name','address','address2','address3','address4','address5','zipcode','phone_fax','npwpno')
                             ->first();
 				//dd($customer);
+				
 				$customerno         = $customer->customerno;
 				$customername       = $customer->company_name;
 				$vatno              = $customer->npwpno;
@@ -84,6 +87,7 @@ class PDFInvPostpaid extends Controller
 					$duedate			= $bs->DUEDATE;
 					$bsno				= $bs->BSNO;
 					$laststatementdate	= $bs->LASTSTATEMENTDATE;
+					$newstatementdate 	= $bs->NEWSTATEMENTDATE;
 					$previousbalance	= $bs->PREVIOUSBALANCE;
 					$balanceadj			= $bs->BALANCEADJUSTMENT * -1;
 					$previouspay		= $bs->PREVIOUSPAYMENT * -1;
@@ -124,7 +128,7 @@ class PDFInvPostpaid extends Controller
 							);
 				}
 
-                $this->PrintChapter("$custno","$period","$report_date","$custno",$customername,$amountdue,"$duedate","$bsno","$laststatementdate","$vatno","$billingaddress1","$billingaddress2","$billingaddress3","$billingaddress4","$zipcode","$billingaddress5","$phone1",$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);
+                $this->PrintChapter($custno,$period,$report_date,$custno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$zipcode,$billingaddress5,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);
                 $this->Footer();
 
                 //$this->fpdf->AddPage('P');
@@ -140,49 +144,67 @@ class PDFInvPostpaid extends Controller
                 $bs = DB::table('bs_postpaid')
                         ->where('PERIOD', $bs_period)
                         ->where('TOTALUSAGE', '>', 0)
-						->where('master_company.billingtype', 2)
+						->where('billingtypes', 2)
 						->where('fapi', 1)
+						->whereNotIn('master_company.customerno', ["DWH00000020C","DWH00000056C","DWH00000058C","DWH00000071C","DWH00000072C","DWH00000077R","DWH00000078R","DWH00000079R"])
                         ->join('master_company', 'master_company.customerno', '=', 'bs_postpaid.CUSTOMERNO')
-                        ->select('bs_postpaid.CUSTOMERNO', 'DUEDATE', 'BSNO', 'LASTSTATEMENTDATE', 'PREVIOUSBALANCE', 'BALANCEADJUSTMENT', 'PREVIOUSPAYMENT', 'TOTALAMOUNT', 'USAGEADJUSTMENT','TOTALDISCOUNT','TOTALVAT','company_name','address','address2','address3','address4','address5','zipcode','phone_fax','npwpno', DB::raw('(PREVIOUSBALANCE-PREVIOUSPAYMENT-BALANCEADJUSTMENT+TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as AMOUNTDUE'), DB::raw('(TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as CHARGE'), DB::raw('(TOTALAMOUNT+USAGEADJUSTMENT+TOTALDISCOUNT) as BEFOREVAT'))
+						->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
+                        ->select('bs_postpaid.CUSTOMERNO')
                         ->orderBy('bs_postpaid.CUSTOMERNO','desc')
+						->distinct()
                         ->get();
+				//dd($bs);
+				$this->fpdf = new Fpdf;
+				$report_date = "25/12/2021";
 
-                $period = $bs_period;
-                $report_date = "25/12/2021";
-				
-                for($i = 0; $i < count($bs); $i++) 
+                //for($i = 0; $i < count($bs); $i++) 
+				foreach($bs as $rowbs)
                 {
-					$this->fpdf = new Fpdf;
+					$period = $bs_period;
+					$customerno = $rowbs->CUSTOMERNO;
+					
+					$bsd = DB::table('bs_postpaid')
+							->where('PERIOD', $bs_period)
+							->where('TOTALUSAGE', '>', 0)
+							->where('billingtypes', 2)
+							->where('fapi', 1)
+							->where('bs_postpaid.CUSTOMERNO', $customerno)
+							->whereNotIn('master_company.customerno', ["DWH00000020C","DWH00000056C","DWH00000058C","DWH00000071C","DWH00000072C","DWH00000077R","DWH00000078R","DWH00000079R"])
+							->join('master_company', 'master_company.customerno', '=', 'bs_postpaid.CUSTOMERNO')
+							->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
+							->select('bs_postpaid.CUSTOMERNO', 'DUEDATE', 'BSNO', 'NEWSTATEMENTDATE', 'LASTSTATEMENTDATE', 'PREVIOUSBALANCE', 'BALANCEADJUSTMENT', 'PREVIOUSPAYMENT', 'TOTALAMOUNT', 'USAGEADJUSTMENT','TOTALDISCOUNT','TOTALVAT','company_name','address','address2','address3','address4','address5','zipcode','phone_fax','npwpno', DB::raw('(PREVIOUSBALANCE-PREVIOUSPAYMENT-BALANCEADJUSTMENT+TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as AMOUNTDUE'), DB::raw('(TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as CHARGE'), DB::raw('(TOTALAMOUNT+USAGEADJUSTMENT+TOTALDISCOUNT) as BEFOREVAT'))
+							->orderBy('bs_postpaid.CUSTOMERNO','desc')
+							->first();
 
-                    $customerno         = $bs[$i]->CUSTOMERNO;
-                    $amountdue          = $bs[$i]->AMOUNTDUE;
-                    $duedate            = $bs[$i]->DUEDATE;
-                    $bsno               = $bs[$i]->BSNO;
-                    $laststatementdate  = $bs[$i]->LASTSTATEMENTDATE;
-                    $previousbalance    = $bs[$i]->PREVIOUSBALANCE;
-                    $balanceadj         = $bs[$i]->BALANCEADJUSTMENT * -1;
-                    $previouspay        = $bs[$i]->PREVIOUSPAYMENT * -1;
+                    $amountdue          = $bsd->AMOUNTDUE;
+                    $duedate            = $bsd->DUEDATE;
+                    $bsno               = $bsd->BSNO;
+                    $laststatementdate  = $bsd->LASTSTATEMENTDATE;
+                    $newstatementdate 	= $bsd->NEWSTATEMENTDATE;
+                    $previousbalance    = $bsd->PREVIOUSBALANCE;
+                    $balanceadj         = $bsd->BALANCEADJUSTMENT * -1;
+                    $previouspay        = $bsd->PREVIOUSPAYMENT * -1;
                     $totrefund          = 0;
-                    $prevbalance        = ($bs[$i]->PREVIOUSBALANCE)+($bs[$i]->BALANCEADJUSTMENT * -1)+($bs[$i]->PREVIOUSPAYMENT * -1)+($totrefund);
-                    $totalamount        = $bs[$i]->TOTALAMOUNT;
+                    $prevbalance        = ($bsd->PREVIOUSBALANCE)+($bsd->BALANCEADJUSTMENT * -1)+($bsd->PREVIOUSPAYMENT * -1)+($totrefund);
+                    $totalamount        = $bsd->TOTALAMOUNT;
 
-                    $charge             = $bs[$i]->CHARGE;
+                    $charge             = $bsd->CHARGE;
                     $monthly            = 0;
                     $totalusage         = 0;
-                    $usageadj           = $bs[$i]->USAGEADJUSTMENT * -1;
-                    $totdiscount        = $bs[$i]->TOTALDISCOUNT * -1;
-                    $beforevat          = $bs[$i]->BEFOREVAT;
-                    $totalvat           = $bs[$i]->TOTALVAT;
+                    $usageadj           = $bsd->USAGEADJUSTMENT * -1;
+                    $totdiscount        = $bsd->TOTALDISCOUNT * -1;
+                    $beforevat          = $bsd->BEFOREVAT;
+                    $totalvat           = $bsd->TOTALVAT;
 
-                    $customername       = $bs[$i]->company_name;
-                    $vatno              = $bs[$i]->npwpno;
-                    $billingaddress1    = $bs[$i]->address;
-                    $billingaddress2    = $bs[$i]->address2;
-                    $billingaddress3    = $bs[$i]->address3;
-                    $billingaddress4    = $bs[$i]->address4;
-                    $billingaddress5    = $bs[$i]->address5;
-                    $zipcode            = $bs[$i]->zipcode;
-                    $phone1             = $bs[$i]->phone_fax;
+                    $customername       = $bsd->company_name;
+                    $vatno              = $bsd->npwpno;
+                    $billingaddress1    = $bsd->address;
+                    $billingaddress2    = $bsd->address2;
+                    $billingaddress3    = $bsd->address3;
+                    $billingaddress4    = $bsd->address4;
+                    $billingaddress5    = $bsd->address5;
+                    $zipcode            = $bsd->zipcode;
+                    $phone1             = $bsd->phone_fax;
 					$create_by 			= Session::get('userid');
 					$create_at 			= date('Y-m-d H:i:s');
 					
@@ -207,10 +229,9 @@ class PDFInvPostpaid extends Controller
 									]
 								);
 					}
-
-                    $this->PrintChapter("$customerno","$period","$report_date","$customerno",$customername,$amountdue,"$duedate","$bsno","$laststatementdate","$vatno","$billingaddress1","$billingaddress2","$billingaddress3","$billingaddress4","$zipcode","$billingaddress5","$phone1",$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);		
-                    $this->Footer();
 					
+					$this->PrintChapter($customerno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$zipcode,$billingaddress5,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);
+					$this->Footer();					
                 }
 
 				$this->fpdf->AliasNbPages();
@@ -317,7 +338,7 @@ class PDFInvPostpaid extends Controller
         $this->fpdf->SetX($x);
     }
 
-    public function ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount) 
+    public function ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount) 
     {
         $this->fpdf->Image('./images/logo-01.jpg',8,6,25);	
 
@@ -354,25 +375,26 @@ class PDFInvPostpaid extends Controller
         $this->fpdf->Ln(2);
         $this->fpdf->Cell(130);
 
-        $this->fpdf->Cell(65,20,'',1,0,'C',0);
+        $this->fpdf->Cell(65,25,'',1,0,'C',0);
         $this->fpdf->Ln(5);
         $blank = '';
 
-        $this->fpdf->Cell(131,4,"$billingaddress1",0,0,'L',0);
-        $this->fpdf->Cell(25,4,'Statement No',0,0,'L',0);
+		$dateinv = date('d F Y');
+        $this->fpdf->Cell(132,4,"$billingaddress1",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Invoice Date',0,0,'L',0);
+        $this->fpdf->Cell(1,4,": ".strftime('%d %B %Y',strtotime($newstatementdate)),0,1,'L',0);
+        $this->fpdf->Cell(132,4,"$billingaddress2",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Statement No',0,0,'L',0);
         $this->fpdf->Cell(1,4,": $bsno",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress2",0,0,'L',0);
-        $this->fpdf->Cell(25,4,'Statement Month',0,0,'L',0);
+        $this->fpdf->Cell(132,4,"$billingaddress3",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Statement Month',0,0,'L',0);
         $this->fpdf->Cell(1,4,": ".strftime('%B %Y',strtotime($laststatementdate)),0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress3",0,0,'L',0);
-        $this->fpdf->Cell(25,4,'Customer No',0,0,'L',0);
+        $this->fpdf->Cell(132,4,"$billingaddress4 $zipcode",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Customer No',0,0,'L',0);
         $this->fpdf->Cell(1,4,": $customerno",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress4 $zipcode",0,0,'L',0);
+        $this->fpdf->Cell(135,4,"$billingaddress5",0,0,'L',0);
         $this->fpdf->Cell(1,4," ",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress5",0,0,'L',0);
-        $this->fpdf->Cell(1,4," ",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$phone1",0,1,'L',0);
-		//dd($phone1);
+        $this->fpdf->Cell(135,4,"$phone1",0,1,'L',0);
         $this->fpdf->ln(3); 
         $this->fpdf->Cell(40,10,'',1,0,'C',1);
         $this->fpdf->Cell(35,10,'',1,0,'C',1);
@@ -608,11 +630,11 @@ class PDFInvPostpaid extends Controller
         Email : cs@atlasat.co.id",1);
     }
 
-    public function PrintChapter($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount)	
+    public function PrintChapter($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount)	
     {
         
         $this->fpdf->AddPage();
-        $this->ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);	
+        $this->ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);	
         
     }
 }

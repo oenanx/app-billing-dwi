@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
-class RptLogTrial7 implements FromView, WithColumnWidths, WithColumnFormatting
+class RptLogTrial14 implements FromView, WithColumnWidths, WithColumnFormatting
 {
     protected $data;
 	
@@ -20,7 +20,7 @@ class RptLogTrial7 implements FromView, WithColumnWidths, WithColumnFormatting
 
     public function view(): View
     {
-        return view('exports.rptlogtrial7', [
+        return view('exports.rptlogtrial14', [
             'data' => $this->data
         ]);
     }
@@ -31,7 +31,7 @@ class RptLogTrial7 implements FromView, WithColumnWidths, WithColumnFormatting
             'A' => 20,            
             'B' => 45,            
             'C' => 15,            
-            'D' => 45,            
+            'D' => 20,            
         ];
     }
     

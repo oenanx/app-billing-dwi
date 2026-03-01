@@ -31,7 +31,7 @@ class RptLogPostpaid7 implements FromView, WithColumnWidths, WithColumnFormattin
             'A' => 20,            
             'B' => 45,            
             'C' => 15,            
-            'D' => 25,            
+            'D' => 45,            
         ];
     }
     

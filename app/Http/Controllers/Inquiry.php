@@ -33,7 +33,8 @@ class Inquiry extends Controller
                 });
 
 				$data = QueryBuilder::for(Mod_Company::class)
-						->where('master_company.active',1)
+						->where('master_company.active', 1)
+						->where('master_company.fapi', '!=', 1)
 						->join('salesagent', 'salesagent.SALESAGENTCODE', '=', 'master_company.SALESAGENTCODE')
 						->select('master_company.id','master_company.customerno', 'master_company.company_name', 'SALESAGENTNAME', DB::raw('DATE_FORMAT(activation_date,"%d-%m-%Y") AS activate_date'), DB::raw('(active) as factive'), DB::raw('(CASE WHEN active = 1 THEN "Active" ELSE "Inactive" END) as active'), 'master_company.invtypeid', DB::raw('(CASE WHEN master_company.invtypeid = 1 THEN "Periodic" WHEN master_company.invtypeid = 2 THEN "Monthly" END) as tipebilling'))
 						->orderBy('master_company.id','DESC')

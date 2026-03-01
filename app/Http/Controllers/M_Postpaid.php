@@ -15,6 +15,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Yajra\Datatables\Datatables;
 
 class M_Postpaid extends Controller
 {
@@ -108,7 +109,7 @@ class M_Postpaid extends Controller
 	{
 		//$customer = Mod_Company::query()->where('master_company.fapi', 1)->where('fftp', 0)->where('id', $id)->first();
 		//$customerno = $customer->customerno;
-		//dd($customerno);
+		//dd($id);
 
 		if ($request->ajax()) 
 		{
@@ -120,13 +121,18 @@ class M_Postpaid extends Controller
 					->join('master_company', 'master_company.customerno', '=', 'master_product_api_customer.customerno')
 					->select('master_product_api_customer.id','company_name','master_product_api_customer.customerno','master_product_api_customer.product_api_id','master_product_api.product','rates')
 					->orderBy('master_product_api_customer.id','ASC')
-					->allowedFilters(
-						AllowedFilter::scope('general_search')
-					)
-					->paginate($request->query('perpage', 10))
-					->appends(request()->query());
+					//->allowedFilters(
+					//	AllowedFilter::scope('general_search')
+					//)
+					//->paginate($request->query('perpage', 10))
+					//->appends(request()->query());
+					->get();
 
-			return response()->paginator($data);
+			return Datatables::of($data)
+			->addIndexColumn()
+			->make(true);
+
+			//return response()->paginator($data);
 		}
 
 	}
@@ -135,6 +141,7 @@ class M_Postpaid extends Controller
 	{
 		if(Session::get('userid'))
 		{
+			//dd($id);
 			$pieces = explode(";", $id);
 			$pid = $pieces[0];
 			$fid = $pieces[1];

@@ -80,6 +80,7 @@ class PDFInv extends Controller
                     $duedate = $bsid->DUEDATE;
                     $bsno = $bsid->BSNO;
                     $laststatementdate = $bsid->LASTSTATEMENTDATE;
+					$newstatementdate 	= $bsid->NEWSTATEMENTDATE;
                     $previousbalance = $bsid->PREVIOUSBALANCE;
                     $balanceadj = $bsid->BALANCEADJUSTMENT * -1;
                     $previouspay = $bsid->PREVIOUSPAYMENT * -1;
@@ -96,7 +97,7 @@ class PDFInv extends Controller
                     $totalvat = $bsid->TOTALVAT;
                 }
 
-                $this->PrintChapter("$custno","$period","$report_date","$custno",$customername,$amountdue,"$duedate","$bsno","$laststatementdate","$vatno","$billingaddress1","$billingaddress2","$billingaddress3","$billingaddress4","$zipcode","$billingaddress5","$phone1",$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);
+                $this->PrintChapter($custno,$period,$report_date,$custno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$zipcode,$billingaddress5,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);
                 $this->Footer();
 
                 //$this->fpdf->AddPage('P');
@@ -154,7 +155,7 @@ class PDFInv extends Controller
                         ->where('TOTALUSAGE', '>', 0)
 						->where('master_company.invtypeid', 2)
                         ->join('master_company', 'master_company.customerno', '=', 'bs.CUSTOMERNO')
-                        ->select('bs.CUSTOMERNO', 'DUEDATE', 'BSNO', 'LASTSTATEMENTDATE', 'PREVIOUSBALANCE', 'BALANCEADJUSTMENT', 'PREVIOUSPAYMENT', 'TOTALAMOUNT', 'USAGEADJUSTMENT','TOTALDISCOUNT','TOTALVAT','company_name','address','address2','address3','address4','address5','zipcode','phone_fax','npwpno', DB::raw('(PREVIOUSBALANCE-PREVIOUSPAYMENT-BALANCEADJUSTMENT+TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as AMOUNTDUE'), DB::raw('(TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as CHARGE'), DB::raw('(TOTALAMOUNT+USAGEADJUSTMENT+TOTALDISCOUNT) as BEFOREVAT'))
+                        ->select('bs.CUSTOMERNO', 'DUEDATE', 'BSNO', 'NEWSTATEMENTDATE', 'LASTSTATEMENTDATE', 'PREVIOUSBALANCE', 'BALANCEADJUSTMENT', 'PREVIOUSPAYMENT', 'TOTALAMOUNT', 'USAGEADJUSTMENT','TOTALDISCOUNT','TOTALVAT','company_name','address','address2','address3','address4','address5','zipcode','phone_fax','npwpno', DB::raw('(PREVIOUSBALANCE-PREVIOUSPAYMENT-BALANCEADJUSTMENT+TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as AMOUNTDUE'), DB::raw('(TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as CHARGE'), DB::raw('(TOTALAMOUNT+USAGEADJUSTMENT+TOTALDISCOUNT) as BEFOREVAT'))
                         ->orderBy('bs.CUSTOMERNO','desc')
                         ->get();
 
@@ -170,6 +171,7 @@ class PDFInv extends Controller
                     $duedate            = $bs[$i]->DUEDATE;
                     $bsno               = $bs[$i]->BSNO;
                     $laststatementdate  = $bs[$i]->LASTSTATEMENTDATE;
+					$newstatementdate 	= $bs[$i]->NEWSTATEMENTDATE;
                     $previousbalance    = $bs[$i]->PREVIOUSBALANCE;
                     $balanceadj         = $bs[$i]->BALANCEADJUSTMENT * -1;
                     $previouspay        = $bs[$i]->PREVIOUSPAYMENT * -1;
@@ -197,7 +199,7 @@ class PDFInv extends Controller
 					$create_by 			= Session::get('userid');
 					$create_at 			= date('Y-m-d H:i:s');
 
-                    $this->PrintChapter("$customerno","$period","$report_date","$customerno",$customername,$amountdue,"$duedate","$bsno","$laststatementdate","$vatno","$billingaddress1","$billingaddress2","$billingaddress3","$billingaddress4","$zipcode","$billingaddress5","$phone1",$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);		
+                    $this->PrintChapter($customerno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$zipcode,$billingaddress5,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);		
                     $this->Footer();
 
 					$this->fpdf->AliasNbPages();
@@ -337,7 +339,7 @@ class PDFInv extends Controller
         $this->fpdf->SetX($x);
     }
 
-    public function ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount) 
+    public function ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount) 
     {
         $this->fpdf->Image('./images/logo-01.jpg',8,6,25);	
 
@@ -374,24 +376,26 @@ class PDFInv extends Controller
         $this->fpdf->Ln(2);
         $this->fpdf->Cell(130);
 
-        $this->fpdf->Cell(65,20,'',1,0,'C',0);
+        $this->fpdf->Cell(65,25,'',1,0,'C',0);
         $this->fpdf->Ln(5);
         $blank = '';
 
-        $this->fpdf->Cell(131,4,"$billingaddress1",0,0,'L',0);
-        $this->fpdf->Cell(25,4,'Statement No',0,0,'L',0);
+		$dateinv = date('d F Y');
+        $this->fpdf->Cell(132,4,"$billingaddress1",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Invoice Date',0,0,'L',0);
+        $this->fpdf->Cell(1,4,": ".strftime('%d %B %Y',strtotime($newstatementdate)),0,1,'L',0);
+        $this->fpdf->Cell(132,4,"$billingaddress2",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Statement No',0,0,'L',0);
         $this->fpdf->Cell(1,4,": $bsno",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress2",0,0,'L',0);
-        $this->fpdf->Cell(25,4,'Statement Month',0,0,'L',0);
+        $this->fpdf->Cell(132,4,"$billingaddress3",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Statement Month',0,0,'L',0);
         $this->fpdf->Cell(1,4,": ".strftime('%B %Y',strtotime($laststatementdate)),0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress3",0,0,'L',0);
-        $this->fpdf->Cell(25,4,'Customer No',0,0,'L',0);
+        $this->fpdf->Cell(132,4,"$billingaddress4 $zipcode",0,0,'L',0);
+        $this->fpdf->Cell(26,4,'Customer No',0,0,'L',0);
         $this->fpdf->Cell(1,4,": $customerno",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress4 $zipcode",0,0,'L',0);
+        $this->fpdf->Cell(135,4,"$billingaddress5",0,0,'L',0);
         $this->fpdf->Cell(1,4," ",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$billingaddress5",0,0,'L',0);
-        $this->fpdf->Cell(1,4," ",0,1,'L',0);
-        $this->fpdf->Cell(131,4,"$phone1",0,1,'L',0);
+        $this->fpdf->Cell(135,4,"$phone1",0,1,'L',0);
         $this->fpdf->ln(3); 
         $this->fpdf->Cell(40,10,'',1,0,'C',1);
         $this->fpdf->Cell(35,10,'',1,0,'C',1);
@@ -623,11 +627,11 @@ class PDFInv extends Controller
         Email : cs@atlasat.co.id",1);
     }
 
-    public function PrintChapter($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount)	
+    public function PrintChapter($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount)	
     {
         
         $this->fpdf->AddPage();
-        $this->ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);	
+        $this->ChapterTitle($custno,$period,$report_date,$customerno,$customername,$amountdue,$duedate,$bsno,$laststatementdate,$newstatementdate,$vatno,$billingaddress1,$billingaddress2,$billingaddress3,$billingaddress4,$billingaddress5,$zipcode,$phone1,$previousbalance,$balanceadj,$previouspay,$totrefund,$prevbalance,$charge,$monthly,$totalusage,$usageadj,$totdiscount,$beforevat,$totalvat,$totalamount);	
         
     }
 }

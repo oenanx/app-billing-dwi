@@ -94,7 +94,7 @@
                 </div>
 			</div>
 		</div>
-		<div class="datatable datatable-bordered datatable-head-custom" id="Show-Tables" style="width:100%; font-size: 8pt; height: auto;">
+		<div class="datatable datatable-bordered datatable-head-custom" id="Show-Tables" style="width:100%; font-size: 8pt; height: 80%;">
 
 		</div>
 	</div>
@@ -205,7 +205,7 @@
 					</div>
 				</div>
 				<div class="card-footer" align="right">
-					<button type="button" class="btn btn-danger btn-lg" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-danger btn-lg" data-dismiss="modal" onclick="window.location.reload();">Close</button>
 				</div>
 			</div>
 		</div>
@@ -213,20 +213,27 @@
 </div>
 
 <div id="view-modal-rates" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-xl">
+	<div id="dialog-rates" class="modal-dialog modal-dialog-centered modal-xl" role="document" style="width:100%">
 		<div class="modal-content">
-			<div class="card">
-				<div class="card-header">
-					<h2 class="card-title"><b>View Product Rates</b></h2>
+			<div class="modal-header py-5">
+				<h2 class="modal-title"><b>View Product Rates</b></h2>
+			</div>
+			<div class="modal-body" style="width:100%; font-size: 8pt; height: auto;">
+				<div id="modal-loader" style="display: none; text-align: center;">
+					<img src="{{ asset('assets/images/ajax-loader.gif') }}">
 				</div>
-				<div class="card-body">
-					<div id="modal-loader" style="display: none; text-align: center;">
-						<img src="{{ asset('assets/images/ajax-loader.gif') }}">
-					</div>
-					<div class="datatable datatable-bordered datatable-head-custom" id="Show-Tables-Rates" style="width:100%; font-size: 8pt; height: auto;">
-
-					</div>
-				</div>
+				<table class="table table-bordered table-hover" id="Show-Tables-Rates">
+					<thead bgcolor="#ffdcdc" align="center">
+						<tr>
+							<th><center>Customer Name</center></th>
+							<th><center>Product Name</center></th>
+							<th><center>Rates</center></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="modal-footer" align="right">
+				<button type="button" class="btn btn-danger btn-lg" data-dismiss="modal" onclick="window.location.reload();">Close</button>
 			</div>
 		</div>
 	</div>
@@ -246,6 +253,7 @@
 <script type="text/javascript" src="{{ asset('assets/js/bootstrap-datetimepicker.js') }}"></script>
 <script type="text/javascript" class="init">
 var dataTable;
+var dataTableRates;
 $(document).ready(function() 
 {
 	$.ajaxSetup({
@@ -253,7 +261,7 @@ $(document).ready(function()
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
 	});
-
+	
 	$('body').on('focus','.timepicker', function()
 	{
 		$(this).timepicker({
@@ -463,98 +471,39 @@ $('body').on('click', '.viewCpy', function ()
 
 $('body').on('click', '.viewRates', function () 
 {
+	$('#dialog-rates').css({width:'99%', height:'auto', 'max-height':'auto'});
 	var id = $(this).data("id");
 	$('.help-block').empty(); // clear error string
-	$.get("{{ url('M_Postpaid/view_data') }}"+'/'+id, function (data) 
-	{
-		$('.modal-dialog').css({width:'98%',height:'100%', 'max-height':'100%'});
-		
-		var dataTableRates = $('#Show-Tables-Rates').KTDatatable(
-		{
-			// datasource definition
-			data: 	
-			{
-				type: 'remote',
-				source: {
-					read: {
-						url: '{{ url('M_Postpaid/datatable_rates') }}'+'/'+id,
-						// sample custom headers
-						// headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
-						map: function(raw) {
-							// sample data mapping
-							var dataSet = raw;
-							if (typeof raw.data !== 'undefined') {
-								dataSet = raw.data;
-							}
-							return dataSet;
-						},
-					},
-				},
-				pageSize: 10,
-				serverPaging: false,
-				serverFiltering: false,
-				serverSorting: false,
-			},
+	//$.get("{{ url('M_Postpaid/view_data') }}"+'/'+id, function (data) 
+	//{
+	
+    var dataTableBS = $('#Show-Tables-Rates').DataTable(
+    {
+        destroy: true,
+        processing: true,
+        serverSide: true,
+        //pagingType: "simple_numbers",
+        autoWidth: true,
+        paginate: false,
+        language: 
+        { 
+            processing: "Mohon tunggu sebentar sedang memproses data..."
+        },
+        ajax: "{{ url('M_Postpaid/datatable_rates') }}"+'/'+id,
+        columns: [
+            {data: 'company_name', className: 'text-left', name: 'company_name'},
+            {data: 'product', className: 'text-center', name: 'product'},
+            {data: 'rates', className: 'text-right', name: 'rates'},
+        ],
+        order: [[ 1, "asc" ]],
+		scrollCollapse: true,
+		//scrollY: "300px",
+		bInfo : false,
+		dom: "rtip"
+    });
 
-			// layout definition
-			layout: {
-				scroll: false,
-				footer: false,
-				theme: 'default',
-				overlayColor: '#fefefe',
-				opacity: 4,
-				processing: 'Mohon tunggu sebentar sedang memproses data ...',
-			},
-
-			// translate definition
-			translate: {
-				records: {
-					noRecords: 'Data tidak ada ...'
-				}
-			},
-
-			// column sorting
-			//sortable: false,
-			pagination: false,
-			//search: {
-			//	input: $('#kt_datatable_search_query'),
-			//	key: 'generalSearch'
-			//},
-
-			// columns definition
-			columns: [
-			//{
-			//	field: 'customerno',
-			//	sortable: false,
-			//	width: 100,
-			//	textAlign: 'center',
-			//	title: '<p style="font-size:11px; text-align:center;">Customer No.</p>',
-			//},
-			{
-				field: 'company_name',
-				sortable: true,
-				width: 320,
-				textAlign: 'left',
-				title: '<p style="font-size:11px; text-align:center;">Company Name.</p>',
-			},
-			{
-				field: 'product',
-				sortable: false,
-				width: 120,
-				textAlign: 'center',
-				title: '<p style="font-size:11px; text-align:center;">Product Name</p>',
-			},
-			{
-				field: 'rates',
-				sortable: false,
-				width: 100,
-				textAlign: 'center',
-				title: '<p style="font-size:11px; text-align:center;">Rates</p>',
-			}],
-		});
-
-		$('#view-modal-rates').modal('show');
-	});
+	$('#view-modal-rates').modal('show');
+	//});
 });
 
 $('body').on('click', '.viewUsage', function () 

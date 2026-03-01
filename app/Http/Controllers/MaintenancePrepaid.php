@@ -138,7 +138,10 @@ class MaintenancePrepaid extends Controller
             //dd($delbsdetail);
 
             $duedate = substr($period,0,4).'-'.substr($period,4,2).'-20';
-            $newstatementdate = date('Y-m-d', strtotime("last day", strtotime($period5tgl)));
+            $newstatementdate = date('Y-m-d', strtotime($period5tgl));
+			//Baris command di bawah ini di-non-aktifkan per 1 Juli 2024.
+            //$newstatementdate = date('Y-m-d', strtotime("last day", strtotime($period5tgl)));
+			//------------------------------------------------------------------------------------------------------------------------
             $laststatementdate = $period2tgl;
             $paymentdatevat = date('Y-m-d', strtotime("last day", strtotime($period5tgl)));
             //dd($paymentdatevat);

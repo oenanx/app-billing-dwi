@@ -74,13 +74,16 @@ class PaymentPostpaid extends Controller
 			{
 				$data = QueryBuilder::for(Mod_Company::class)
 						->where('fapi', 1)
-						->where('master_company.billingtype', 2)
-						->where('master_company.active', '!=', 2)
+						->where('billingtypes', 2)
+						->whereNotIn('master_company.customerno', ["DWH00000020C","DWH00000056C","DWH00000058C","DWH00000071C","DWH00000072C","DWH00000077R","DWH00000078R","DWH00000079R"])
 						->join('salesagent', 'salesagent.SALESAGENTCODE', '=', 'master_company.SALESAGENTCODE')
-						->select('master_company.id','master_company.customerno', 'master_company.company_name', DB::raw('UPPER(SALESAGENTNAME) AS SALESAGENTNAME'), DB::raw('DATE_FORMAT(activation_date,"%d-%m-%Y") AS activate_date'), DB::raw('(active) as factive'), DB::raw('(CASE WHEN active = 1 THEN "Active" WHEN active = 2 THEN "Trial" WHEN active = 0 THEN "Terminated" ELSE "Blocked" END) as active'), 'master_company.billingtype',DB::raw('(CASE WHEN master_company.billingtype = 1 THEN "PREPAID" WHEN master_company.billingtype = 2 THEN "POSTPAID" END) as tipebilling'))
-						->orderBy('master_company.id','DESC')
+						->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
+						->select('master_company.customerno', 'master_company.company_name', DB::raw('UPPER(SALESAGENTNAME) AS SALESAGENTNAME'), DB::raw('DATE_FORMAT(activation_date,"%d-%m-%Y") AS activate_date'), DB::raw('(active) as factive'), DB::raw('(CASE WHEN active = 1 THEN "Active" WHEN active = 2 THEN "Trial" WHEN active = 0 THEN "Terminated" ELSE "Blocked" END) as active'), DB::raw('billingtypes AS billingtype'),DB::raw('(CASE WHEN billingtypes = 1 THEN "PREPAID" WHEN billingtypes = 2 THEN "POSTPAID" END) as tipebilling'))
+						->groupBy('master_company.customerno','master_company.company_name','SALESAGENTNAME','activate_date','factive','active','billingtypes','tipebilling')
+						->orderBy('master_company.customerno','DESC')
 						->paginate($request->query('perpage', 10))
 						->appends(request()->query());
+						//dd($data);
 
                 return response()->paginator($data);
 			}
@@ -137,10 +140,13 @@ class PaymentPostpaid extends Controller
 				//$data = DB::table('trans_postpaid')
 				$data = QueryBuilder::for(Mod_PaymentPostpaid::class)
 						->where('fapi', 1)
-						->where('master_company.billingtype', 2)
+						->where('billingtypes', 2)
+						->where('NOMINAL_TAGIHAN', '>', 0)
 						->where('master_company.customerno', $customerno)
 						->join('master_company', 'master_company.CUSTOMERNO', '=', 'trans_postpaid.CUSTOMERNO')
-						->select('TR_ID', DB::raw('trans_postpaid.CUSTOMERNO AS CustomerId'), DB::raw('master_company.company_name AS CustomerName'), DB::raw('DATE_FORMAT(DUEDATE,"%Y-%m-%d") AS DueDate'), DB::raw('DATE_FORMAT(ENTRYDATE,"%Y-%m-%d") AS EntryDate'), DB::raw('CONCAT("Rp. ",FORMAT(NOMINAL_TAGIHAN,0)) AS NOMINAL_TAGIHAN'), 'PERIOD', DB::raw('CONCAT("Rp. ",FORMAT(AMOUNT,0)) AS Payment'), DB::raw('BSNO AS InvoiceNo'), DB::raw('CASE WHEN (NOMINAL_TAGIHAN - AMOUNT) = 0 THEN "PAID" ELSE "UNPAID" END AS statuspayment'), DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" WHEN master_company.active = 0 THEN "Terminated" ELSE "Blocked" END) as active'))
+						->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
+						->select('TR_ID', DB::raw('trans_postpaid.CUSTOMERNO AS CustomerId'), DB::raw('master_company.company_name AS CustomerName'), DB::raw('DATE_FORMAT(DUEDATE,"%Y-%m-%d") AS DueDate'), DB::raw('DATE_FORMAT(ENTRYDATE,"%Y-%m-%d") AS EntryDate'), DB::raw('CONCAT("Rp. ",FORMAT(NOMINAL_TAGIHAN,0)) AS NOMINAL_TAGIHAN'), 'PERIOD', DB::raw('CONCAT("Rp. ",FORMAT(AMOUNT,0)) AS Payment'), DB::raw('BSNO AS InvoiceNo'), DB::raw('CASE WHEN AMOUNT > 0 THEN "PAID" ELSE "UNPAID" END AS statuspayment'), DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" WHEN master_company.active = 0 THEN "Terminated" ELSE "Blocked" END) as active'))
+						->groupBy('trans_postpaid.TR_ID','trans_postpaid.CUSTOMERNO','master_company.company_name','DUEDATE','ENTRYDATE','NOMINAL_TAGIHAN','PERIOD','Payment','BSNO','statuspayment','active')
 						->orderBy('trans_postpaid.TR_ID','DESC')
 						->allowedFilters(
 							AllowedFilter::scope('general_search')
@@ -203,12 +209,14 @@ class PaymentPostpaid extends Controller
         if(Session::get('userid'))
         {
             $data = DB::table('trans_postpaid')
-					->where('master_company.billingtype', 2)
+					->where('billingtypes', 2)
 					->where('fapi', 1)
                     ->where('trans_postpaid.TR_ID', $id)
                     ->join('master_company', 'master_company.CUSTOMERNO', '=', 'trans_postpaid.CUSTOMERNO')
+					->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
                     ->leftJoin('paymentmethod', 'paymentmethod.PAYMENTCODE', '=', 'trans_postpaid.PAYMENTCODE')
                     ->select('TR_ID', DB::raw('trans_postpaid.CUSTOMERNO AS CustomerId'), DB::raw('master_company.company_name AS CustomerName'), DB::raw('DATE_FORMAT(TRANSACTIONDATE,"%Y-%m-%d") AS PaymentDate'), DB::raw('DATE_FORMAT(ENTRYDATE,"%Y-%m-%d") AS EntryDate'), 'trans_postpaid.PAYMENTCODE', DB::raw('paymentmethod.PAYMENTMETHOD AS PaymentMethod'), DB::raw('CASE WHEN TRANSACTIONCODE = "P" THEN "PAYMENT" WHEN TRANSACTIONCODE = "B" THEN "BALANCED ADJUSTMENT" WHEN TRANSACTIONCODE = "D" THEN "DISCOUNT" WHEN TRANSACTIONCODE = "U" THEN "USAGE ADJUSTMENT" WHEN TRANSACTIONCODE = "R" THEN "REFUND" END AS TransactionType'), DB::raw('TRANSACTIONCODE AS TransactionTypes'), 'trans_postpaid.AMOUNT', DB::raw('FORMAT(AMOUNT,0) AS Payment'), DB::raw('INFO AS AdditionalInfo'),'trans_postpaid.RECEIPTNO','trans_postpaid.NOMINAL_TAGIHAN','trans_postpaid.PERIOD')
+					->distinct()
                     ->first();
 
             return response()->json($data);
