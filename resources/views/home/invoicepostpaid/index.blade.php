@@ -258,7 +258,7 @@ $.ajaxSetup({
 
 $(document).ready(function() 
 {
-	var route = "{{ url('autocomplete-apisearch') }}";
+	var route = "{{ url('/autocomplete-apisearch') }}";
 	$( "#searchcustname" ).typeahead(
 	{
 		minLength: 2,

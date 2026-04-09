@@ -141,13 +141,17 @@ class PaymentPostpaid extends Controller
 				$data = QueryBuilder::for(Mod_PaymentPostpaid::class)
 						->where('fapi', 1)
 						->where('billingtypes', 2)
-						->where('NOMINAL_TAGIHAN', '>', 0)
+						->where('TOTALAMOUNT', '>', 0)
 						->where('master_company.customerno', $customerno)
 						->join('master_company', 'master_company.CUSTOMERNO', '=', 'trans_postpaid.CUSTOMERNO')
 						->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
-						->select('TR_ID', DB::raw('trans_postpaid.CUSTOMERNO AS CustomerId'), DB::raw('master_company.company_name AS CustomerName'), DB::raw('DATE_FORMAT(DUEDATE,"%Y-%m-%d") AS DueDate'), DB::raw('DATE_FORMAT(ENTRYDATE,"%Y-%m-%d") AS EntryDate'), DB::raw('CONCAT("Rp. ",FORMAT(NOMINAL_TAGIHAN,0)) AS NOMINAL_TAGIHAN'), 'PERIOD', DB::raw('CONCAT("Rp. ",FORMAT(AMOUNT,0)) AS Payment'), DB::raw('BSNO AS InvoiceNo'), DB::raw('CASE WHEN AMOUNT > 0 THEN "PAID" ELSE "UNPAID" END AS statuspayment'), DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" WHEN master_company.active = 0 THEN "Terminated" ELSE "Blocked" END) as active'))
-						->groupBy('trans_postpaid.TR_ID','trans_postpaid.CUSTOMERNO','master_company.company_name','DUEDATE','ENTRYDATE','NOMINAL_TAGIHAN','PERIOD','Payment','BSNO','statuspayment','active')
-						->orderBy('trans_postpaid.TR_ID','DESC')
+						->join('bs_postpaid', function ($join) {
+							$join->on('trans_postpaid.customerno', '=', 'bs_postpaid.customerno')
+								 ->on('trans_postpaid.PERIOD', '=', 'bs_postpaid.PERIOD');
+							})
+						->select('TR_ID', DB::raw('trans_postpaid.CUSTOMERNO AS CustomerId'), DB::raw('master_company.company_name AS CustomerName'), DB::raw('DATE_FORMAT(trans_postpaid.DUEDATE,"%Y-%m-%d") AS DueDate'), DB::raw('DATE_FORMAT(ENTRYDATE,"%Y-%m-%d") AS EntryDate'), DB::raw('CONCAT("Rp. ",FORMAT((bs_postpaid.TOTALAMOUNT + bs_postpaid.TOTALVAT),0)) AS NOMINAL_TAGIHAN'), 'trans_postpaid.PERIOD', DB::raw('CONCAT("Rp. ",FORMAT(AMOUNT,0)) AS Payment'), DB::raw('bs_postpaid.BSNO AS InvoiceNo'), DB::raw('CASE WHEN AMOUNT > 0 THEN "PAID" ELSE "UNPAID" END AS statuspayment'), DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" WHEN master_company.active = 0 THEN "Terminated" ELSE "Blocked" END) as active'))
+						->groupBy('trans_postpaid.TR_ID','trans_postpaid.CUSTOMERNO','master_company.company_name','trans_postpaid.DUEDATE','ENTRYDATE','TOTALAMOUNT','TOTALVAT','trans_postpaid.PERIOD','Payment','bs_postpaid.BSNO','statuspayment','active')
+						->orderBy('trans_postpaid.PERIOD','DESC')
 						->allowedFilters(
 							AllowedFilter::scope('general_search')
 						)
@@ -277,19 +281,26 @@ class PaymentPostpaid extends Controller
 			$SETTLEMENT_STATUS	= 1;
 	        $NOMINAL_TAGIHAN    = $request->nominal1;
 	        $PERIOD		        = $request->period1;
+	        $PERIOD_PAY	        = $request->period1 + 1;
             $UPD_USER           = $request->userid1;
 	        $UPD_DATE           = date('Y-m-d H:i:s');
 			
-			if ($AMOUNT !== $NOMINAL_TAGIHAN)
-			{
-				//return back()->with('error','Payment can not less than Billing Amount !');
-				return response()->json(['error' => 'The Payment Amount must be the same as the Billing Amount !']);
-			};
+			//echo "TAGIHAN : ".$AMOUNT."<br />";
+			//echo "INPUT PAYMENT : ".$NOMINAL_TAGIHAN."<br />";
+			//dd("------");
+			//if ($AMOUNT !== $NOMINAL_TAGIHAN)
+			//{
+				//return response()->json(['error' => 'The Payment Amount must be the same as the Billing Amount !']);
+			//};
 
             $data = array('ENTRYDATE' => $ENTRYDATE, 'TRANSACTIONCODE' => $TRANSACTIONCODE, 'AMOUNT' => $AMOUNT, 'PAYMENTCODE' => $PAYMENTCODE, 'INFO' => $INFO, 'RECEIPTNO' => $RECEIPTNO, 'SETTLEMENT_STATUS' => $SETTLEMENT_STATUS, 'UPD_USER' => $UPD_USER, 'UPD_DATE' => $UPD_DATE);
 
 		    Mod_PaymentPostpaid::updateData($editid, $data);
 			
+			//Update previouspayment periode +1 di table bs_postpaid
+            $query1 = DB::table('bs_postpaid')->where('CUSTOMERNO', $CUSTOMERNO)->where('PERIOD', $PERIOD_PAY)->update(['PREVIOUSPAYMENT' => $AMOUNT]);
+
+
 			//Update field "active" di table master_company_api dan di table master_user server dasboard (app global)
             $query1 = DB::connection('mysql_4')->table('master_company')->where('fapi', 1)->where('customerno', $CUSTOMERNO)->update(['active' => 1]);
 

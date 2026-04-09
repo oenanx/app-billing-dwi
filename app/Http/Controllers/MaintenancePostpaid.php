@@ -130,6 +130,8 @@ class MaintenancePostpaid extends Controller
 			$delphone_age	= DB::table('sum_phone_age_postpaid')->where('sum_phone_age_postpaid.period',$period2)->delete();
 			$delphone_idm	= DB::table('sum_phone_id_match_postpaid')->where('sum_phone_id_match_postpaid.period',$period2)->delete();
 			$deldouble		= DB::table('sum_double_postpaid')->where('sum_double_postpaid.period',$period2)->delete();
+			$delcellpro		= DB::table('sum_validno_pro_postpaid')->where('sum_validno_pro_postpaid.period',$period2)->delete();
+			$delwavalid		= DB::table('sum_wa_validation_postpaid')->where('sum_wa_validation_postpaid.period',$period2)->delete();
 			
 			//GET USAGE VALIDNO API POSTPAID FROM Dashboard
 			$get1  = DB::connection('mysql_4')->select("CALL sp_trx_validno_monthly('".$period2."');");
@@ -667,6 +669,59 @@ class MaintenancePostpaid extends Controller
 					]
 				);
 			}
+			
+			//GET USAGE WA Validation API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_wa_validation_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				DB::table('sum_wa_validation_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE Cellular Validation Pro API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_cellularno_validation_pro_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				DB::table('sum_validno_pro_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+
 
             $query1 = DB::table('master_maintenance_all')
                     ->where('id', $id)
@@ -1527,6 +1582,57 @@ class MaintenancePostpaid extends Controller
                         ]
                     );
                 }
+
+				//22. USAGE WA Validation API POSTPAID FROM Dashboard
+				$data_22 = DB::table('sum_wa_validation_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"WA Validation API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->get();
+
+				foreach($data_22 as $row_22)
+                {
+                    $amount1	= $row_22->total;
+                    $cust		= $row_22->customerno;
+                    $deskripsi	= $row_22->deskripsi;
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $deskripsi,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//23. USAGE Cellular Validation Pro API POSTPAID FROM Dashboard
+				$data_23 = DB::table('sum_validno_pro_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Cellular Validation Pro API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->get();
+
+				foreach($data_23 as $row_23)
+                {
+                    $amount1	= $row_23->total;
+                    $cust		= $row_23->customerno;
+                    $deskripsi	= $row_23->deskripsi;
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $deskripsi,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
 
                 //TOTAL USAGE
                 $data12 = DB::table('bs_postpaid_detail')

@@ -415,12 +415,16 @@ class PDFInvPostpaid extends Controller
         $this->fpdf->SetFont('times','B',10);
 
         $this->fpdf->Ln(6);
-        $this->fpdf->Cell(40,5,number_format("$previousbalance"),1,0,'R',0);
-        if ($previouspay < 0) {
-            $previouspay1 = '('.number_format($previouspay*-1).')';
-        } else {
-            $previouspay1 = number_format("$previouspay");
-        }	
+        //$this->fpdf->Cell(40,5,number_format("$previousbalance"),1,0,'R',0);
+        //if ($previouspay < 0) {
+        //    $previouspay1 = '('.number_format($previouspay*-1).')';
+        //} else {
+        //    $previouspay1 = number_format("$previouspay");
+        //}	
+		$prebalance		= 0;
+		$previouspay1	= 0;
+        $this->fpdf->Cell(40,5,number_format("$prebalance"),1,0,'R',0);
+		
         $this->fpdf->Cell(35,5,$previouspay1,1,0,'R',0);
         $this->fpdf->Cell(60,5,number_format("$charge"),1,0,'R',0);
         $this->fpdf->Cell(60,5,number_format("$amountdue"),1,0,'R',0);

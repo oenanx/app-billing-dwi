@@ -4,10 +4,12 @@
 				<table style="width: 100%">
 					<thead>
 						<tr>
-							<th style="border:1px solid black; text-align: center; width: 30%;">Tgl. Hits</th>
-							<th style="border:1px solid black; text-align: center; width: 35%;">API Id.</th>
-							<th style="border:1px solid black; text-align: center; width: 15%;">Status</th>
-							<th style="border:1px solid black; text-align: center; width: 20%;">Data Input.</th>
+							<th style="border:1px solid black; text-align: center;">Tgl. Hits</th>
+							<th style="border:1px solid black; text-align: center;">API Id.</th>
+							<th style="border:1px solid black; text-align: center;">Status</th>
+							<th style="border:1px solid black; text-align: center;">Phone No.</th>
+							<th style="border:1px solid black; text-align: center;">NIK / eKTP</th>
+							<th style="border:1px solid black; text-align: center;">Reg. Date</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -16,7 +18,9 @@
 								<td style="border:1px solid black; text-align: left;">{{ $details->tgl_hit }}</td>
 								<td style="border:1px solid black; text-align: left;">{{ $details->noapi_id }}</td>
 								<td style="border:1px solid black; text-align: center;">{{ $details->status_hit }}</td>
-								<td style="border:1px solid black; text-align: left;">{{ "'".$details->data_input }}</td>
+								<td style="border:1px solid black; text-align: center;">{{ $details->data_input }}</td>
+								<td style="border:1px solid black; text-align: center;">{{ "'".$details->nik }}</td>
+								<td style="border:1px solid black; text-align: center;">{{ $details->reg_date }}</td>
 							</tr>
 						@endforeach
 					</tbody>

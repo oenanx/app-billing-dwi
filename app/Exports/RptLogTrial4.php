@@ -29,9 +29,11 @@ class RptLogTrial4 implements FromView, WithColumnWidths, WithColumnFormatting
     {
         return [
             'A' => 20,            
-            'B' => 45,            
+            'B' => 40,            
             'C' => 15,            
             'D' => 20,            
+            'E' => 20, //nik           
+            'F' => 15, //Tanggal           
         ];
     }
     
@@ -41,7 +43,9 @@ class RptLogTrial4 implements FromView, WithColumnWidths, WithColumnFormatting
             'A' => NumberFormat::FORMAT_DATE_YYYYMMDD,
             'B' => DataType::TYPE_STRING,
             'C' => DataType::TYPE_STRING,
-            'D' => DataType::TYPE_STRING,
+            'D' => NumberFormat::FORMAT_NUMBER,
+            'E' => DataType::TYPE_STRING,
+            'F' => NumberFormat::FORMAT_DATE_YYYYMMDD,
         ];
     }
 }

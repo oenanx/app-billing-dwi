@@ -14,9 +14,9 @@ class Mod_Company extends Model
     const CREATE_AT = 'create_at';
     const UPDATE_AT = 'update_at';
 
-	//id,customerno,company_name,phone_fax,address,address2,address3,address4,address5,zipcode,address_npwp,email_pic,email_billing,npwpno,npwpname,SALESAGENTCODE,notes,active,activation_date,create_by,create_at,update_by,update_at,discount,tech_pic_name,billing_pic_name,productid,fcompleted
+	//id,customerno,company_name,phone_fax,address,address2,address3,address4,address5,zipcode,address_npwp,email_pic,email_billing,npwpno,npwpname,SALESAGENTCODE,notes,active,activation_date,create_by,create_at,update_by,update_at,discount,tech_pic_name,billing_pic_name,productid,invtypeid,fftp,fcompleted,concurrent,parentid,apptypeid,start_trial,end_trial,quotatrial,remainquota,billingtype,fapi
 
-    protected $fillable = ['customerno','company_name','phone_fax','address','address2','address3','address4','address5','zipcode','address_npwp','email_pic','email_billing','npwpno','npwpname','SALESAGENTCODE','notes','active','activation_date','create_by','update_by','discount','tech_pic_name','billing_pic_name','productid','fcompleted'];
+    protected $fillable = ['customerno','company_name','phone_fax','address','address2','address3','address4','address5','zipcode','address_npwp','email_pic','email_billing','npwpno','npwpname','SALESAGENTCODE','notes','active','activation_date','create_by','update_by','discount','tech_pic_name','billing_pic_name','productid','invtypeid','fftp','fcompleted','concurrent','parentid','apptypeid','billingtype','fapi'];
 
 	public static function Update_Cpy($editid,$data)
 	{

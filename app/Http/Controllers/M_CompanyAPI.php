@@ -18,7 +18,7 @@ class M_CompanyAPI extends Controller
     {
         $query = $request->get('query');
 		  
-        $filterResult = DB::table('master_company')->where('billingtype', '=', 2)->where('fapi', 1)->where('company_name', 'LIKE', '%'.$query.'%')->orWhere('customerno', 'LIKE', '%'.$query.'%')->select('customerno', 'company_name')->get();
+        $filterResult = DB::table('master_company')->where('fapi', 1)->where('billingtypes', 2)->where('company_name', 'LIKE', '%'.$query.'%')->orWhere('master_company.customerno', 'LIKE', '%'.$query.'%')->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')->select('master_company.customerno', 'company_name')->distinct()->get();
 		//dd($data);
 
         $data = array();

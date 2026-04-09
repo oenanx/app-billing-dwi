@@ -152,6 +152,45 @@ Route::group(['middleware' => 'prevent-back-history'],function()
     Route::get('SummaryMonth/index', [\App\Http\Controllers\Reports::class, 'summarymonth']);
     Route::post('SummaryMonth/dtTables_rpt/{params}', [\App\Http\Controllers\Reports::class, 'datatable']);
 	Route::get('SummaryMonth/rptadmxls/{params}', [\App\Http\Controllers\Reports::class, 'searching']);
+	
+	
+	Route::get('ViewUsageAPI/index', [\App\Http\Controllers\ViewUsageAPI::class, 'index']);
+	Route::post('ViewUsageAPI/datatable', [\App\Http\Controllers\ViewUsageAPI::class, 'index']);
+	Route::get('ViewUsageAPI/view_usage/{id}', [\App\Http\Controllers\ViewUsageAPI::class, 'view_usage']);
+	Route::post('ViewUsageAPI/datatableusage/{params}', [\App\Http\Controllers\ViewUsageAPI::class, 'datatableusage']);
+	Route::post('ViewUsageAPI/datatableAll/{params}', [\App\Http\Controllers\ViewUsageAPI::class, 'datatableAll']);
+	Route::get('ViewUsageAPI/downloadlog/{params}', [\App\Http\Controllers\ViewUsageAPI::class, 'downloadlog']);
+	
+
+	Route::get('NewChargesDescription/index', [\App\Http\Controllers\NewChargesDescription::class, 'index']);
+	Route::post('NewChargesDescription/datatable/{params}', [\App\Http\Controllers\NewChargesDescription::class, 'datatable']);
+	Route::get('NewChargesDescription/download/{params}', [\App\Http\Controllers\NewChargesDescription::class, 'download']);
+
+
+	Route::get('NewChargesDetail/index', [\App\Http\Controllers\NewChargesDetail::class, 'index']);
+	Route::post('NewChargesDetail/datatable/{params}', [\App\Http\Controllers\NewChargesDetail::class, 'datatable']);
+	Route::get('NewChargesDetail/download/{params}', [\App\Http\Controllers\NewChargesDetail::class, 'download']);
+
+
+	Route::get('NPWP/index', [\App\Http\Controllers\NPWP::class, 'index']);
+	Route::post('NPWP/datatable/{params}', [\App\Http\Controllers\NPWP::class, 'datatable']);
+	Route::get('NPWP/download/{params}', [\App\Http\Controllers\NPWP::class, 'download']);
+
+
+	Route::get('NonNPWP/index', [\App\Http\Controllers\NonNPWP::class, 'index']);
+	Route::post('NonNPWP/datatable/{params}', [\App\Http\Controllers\NonNPWP::class, 'datatable']);
+	Route::get('NonNPWP/download/{params}', [\App\Http\Controllers\NonNPWP::class, 'download']);
+
+
+	Route::get('DiscNPWP/index', [\App\Http\Controllers\DiscNPWP::class, 'index']);
+	Route::post('DiscNPWP/datatable/{params}', [\App\Http\Controllers\DiscNPWP::class, 'datatable']);
+	Route::get('DiscNPWP/download/{params}', [\App\Http\Controllers\DiscNPWP::class, 'download']);
+
+
+	Route::get('DiscNonNPWP/index', [\App\Http\Controllers\DiscNonNPWP::class, 'index']);
+	Route::post('DiscNonNPWP/datatable/{params}', [\App\Http\Controllers\DiscNonNPWP::class, 'datatable']);
+	Route::get('DiscNonNPWP/download/{params}', [\App\Http\Controllers\DiscNonNPWP::class, 'download']);
+
 
 	Route::get('Whiz/autocomplete', [\App\Http\Controllers\Whiz::class, 'autocomplete']);
 	Route::get('Whiz/cariCustomer/{id}', [\App\Http\Controllers\Whiz::class, 'cariCustomer']);
