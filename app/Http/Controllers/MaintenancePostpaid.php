@@ -931,10 +931,11 @@ class MaintenancePostpaid extends Controller
 
                 //PREVIOUS PAYMENT
                 $data1 = DB::table('trans_postpaid')
-                            ->where(DB::raw('DATE_FORMAT(transactiondate,"%Y%m")'), $period)
+                            //->where(DB::raw('DATE_FORMAT(transactiondate,"%Y%m")'), $period)
+							->where(DB::raw('PERIOD'), $period2)
                             ->where('transactioncode', 'P')
                             ->where('paymentcode', '!=', 'G')
-                            ->where('settlement_status', 0)
+                            ->where('settlement_status', 1)
                             ->where('customerno', $cust_no)
                             ->select(DB::raw('sum(amount) AS amountz'),'customerno')
                             ->groupBy('customerno')
