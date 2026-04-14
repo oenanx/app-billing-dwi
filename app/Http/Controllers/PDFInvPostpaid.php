@@ -427,7 +427,8 @@ class PDFInvPostpaid extends Controller
 		
         $this->fpdf->Cell(35,5,$previouspay1,1,0,'R',0);
         $this->fpdf->Cell(60,5,number_format("$charge"),1,0,'R',0);
-        $this->fpdf->Cell(60,5,number_format("$amountdue"),1,0,'R',0);
+        //$this->fpdf->Cell(60,5,number_format("$amountdue"),1,0,'R',0);
+        $this->fpdf->Cell(60,5,number_format("$charge"),1,0,'R',0);
         $this->fpdf->Ln(6);
 
         $this->fpdf->Cell(100,10,'',1,0,'C',1);

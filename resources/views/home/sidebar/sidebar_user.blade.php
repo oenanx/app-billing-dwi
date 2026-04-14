@@ -255,6 +255,7 @@
                     <h4 class="menu-text">Transactions API</h4>
                     <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
                 </li>
+				
 				<!--
                 <li class="menu-item menu-item-submenu {{ in_array(Request::segment(1), array('MaintenancePrepaid','InvoicePrepaid','PaymentPrepaid'))? 'menu-item-open':'' }}" aria-haspopup="true" data-menu-toggle="hover">
                     <a href="javascript:;" class="menu-link menu-toggle">
@@ -398,101 +399,117 @@
                                 </a>
                             </li>
 						
-                            <li class="menu-item {{ Request::segment(1) === 'ViewUsageAPI' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-                                <a href="{{ url('ViewUsageAPI/index') }}" class="menu-link">
-                                    <i class="menu-bullet menu-bullet-dot">
-                                        <span></span>
-                                    </i>
-                                    <span class="menu-text">Usage DataWiz API</span>
-                                </a>
-                            </li>
-						
-                            <li class="menu-item menu-item-submenu {{ in_array(Request::segment(1), array('NewChargesDescription','NewChargesDetail'))? 'menu-item-open':'' }}" aria-haspopup="true" data-menu-toggle="hover">
+                           <li class="menu-item menu-item-submenu {{ in_array(Request::segment(1), array('ViewUsageAPI','NewChargesDescription','NewChargesDetail','NPWP','NonNPWP','DiscNPWP','DiscNonNPWP'))? 'menu-item-open':'' }}" aria-haspopup="true" data-menu-toggle="hover">
 								<a href="javascript:;" class="menu-link menu-toggle">
 									<i class="menu-bullet menu-bullet-dot">
 										<span></span>
 									</i>
-									<span class="menu-text">New Charges</span>
-									<i class="menu-arrow"></i>
-								</a>
-								<div class="menu-submenu" kt-hidden-height="440" style="">
-									<i class="menu-arrow"></i>
-									<ul class="menu-subnav">
-									
-										<li class="menu-item {{ Request::segment(1) === 'NewChargesDescription' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-											<a href="{{ url('NewChargesDescription/index') }}" class="menu-link">
-												<i class="menu-bullet menu-bullet-dot">
-													<span></span>
-												</i>
-												<span class="menu-text">New Charges Description</span>
-											</a>
-										</li>
-									
-										<li class="menu-item {{ Request::segment(1) === 'NewChargesDetail' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-											<a href="{{ url('NewChargesDetail/index') }}" class="menu-link">
-												<i class="menu-bullet menu-bullet-dot">
-													<span></span>
-												</i>
-												<span class="menu-text">New Charges Detail</span>
-											</a>
-										</li>
-									
-									</ul>
-								</div>
-							</li>
-						
-                            <li class="menu-item menu-item-submenu {{ in_array(Request::segment(1), array('NPWP','NonNPWP','DiscNPWP','DiscNonNPWP'))? 'menu-item-open':'' }}" aria-haspopup="true" data-menu-toggle="hover">
-								<a href="javascript:;" class="menu-link menu-toggle">
-									<i class="menu-bullet menu-bullet-dot">
-										<span></span>
-									</i>
-									<span class="menu-text">Report NPWP</span>
+									<span class="menu-text">DataWiz API</span>
 									<i class="menu-arrow"></i>
 								</a>
 								<div class="menu-submenu" kt-hidden-height="440" style="">
 									<i class="menu-arrow"></i>
 									<ul class="menu-subnav">
 												
-										<li class="menu-item {{ Request::segment(1) === 'NPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-											<a href="{{ url('NPWP/index') }}" class="menu-link">
+										<li class="menu-item {{ Request::segment(1) === 'ViewUsageAPI' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+											<a href="{{ url('ViewUsageAPI/index') }}" class="menu-link">
+												<i class="menu-bullet menu-bullet-dot">
+													<span></span>
+												</i>
+												<span class="menu-text">Usage DataWiz API</span>
+											</a>
+										</li>
+						
+										<li class="menu-item menu-item-submenu {{ in_array(Request::segment(1), array('NewChargesDescription','NewChargesDetail'))? 'menu-item-open':'' }}" aria-haspopup="true" data-menu-toggle="hover">
+											<a href="javascript:;" class="menu-link menu-toggle">
+												<i class="menu-bullet menu-bullet-dot">
+													<span></span>
+												</i>
+												<span class="menu-text">New Charges</span>
+												<i class="menu-arrow"></i>
+											</a>
+											<div class="menu-submenu" kt-hidden-height="440" style="">
+												<i class="menu-arrow"></i>
+												<ul class="menu-subnav">
+												
+													<li class="menu-item {{ Request::segment(1) === 'NewChargesDescription' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+														<a href="{{ url('NewChargesDescription/index') }}" class="menu-link">
+															<i class="menu-bullet menu-bullet-dot">
+																<span></span>
+															</i>
+															<span class="menu-text">New Charges Desc.</span>
+														</a>
+													</li>
+												
+													<li class="menu-item {{ Request::segment(1) === 'NewChargesDetail' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+														<a href="{{ url('NewChargesDetail/index') }}" class="menu-link">
+															<i class="menu-bullet menu-bullet-dot">
+																<span></span>
+															</i>
+															<span class="menu-text">New Charges Detail</span>
+														</a>
+													</li>
+												
+												</ul>
+											</div>
+										</li>
+									
+										<li class="menu-item menu-item-submenu {{ in_array(Request::segment(1), array('NPWP','NonNPWP','DiscNPWP','DiscNonNPWP'))? 'menu-item-open':'' }}" aria-haspopup="true" data-menu-toggle="hover">
+											<a href="javascript:;" class="menu-link menu-toggle">
 												<i class="menu-bullet menu-bullet-dot">
 													<span></span>
 												</i>
 												<span class="menu-text">Report NPWP</span>
+												<i class="menu-arrow"></i>
 											</a>
-										</li>
-									
-										<li class="menu-item {{ Request::segment(1) === 'NonNPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-											<a href="{{ url('NonNPWP/index') }}" class="menu-link">
-												<i class="menu-bullet menu-bullet-dot">
-													<span></span>
-												</i>
-												<span class="menu-text">Report non NPWP</span>
-											</a>
-										</li>
-									
-										<li class="menu-item {{ Request::segment(1) === 'DiscNPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-											<a href="{{ url('DiscNPWP/index') }}" class="menu-link">
-												<i class="menu-bullet menu-bullet-dot">
-													<span></span>
-												</i>
-												<span class="menu-text">Report Disc NPWP</span>
-											</a>
-										</li>
-									
-										<li class="menu-item {{ Request::segment(1) === 'DiscNonNPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
-											<a href="{{ url('DiscNonNPWP/index') }}" class="menu-link">
-												<i class="menu-bullet menu-bullet-dot">
-													<span></span>
-												</i>
-												<span class="menu-text">Report Disc Non NPWP</span>
-											</a>
+											<div class="menu-submenu" kt-hidden-height="440" style="">
+												<i class="menu-arrow"></i>
+												<ul class="menu-subnav">
+															
+													<li class="menu-item {{ Request::segment(1) === 'NPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+														<a href="{{ url('NPWP/index') }}" class="menu-link">
+															<i class="menu-bullet menu-bullet-dot">
+																<span></span>
+															</i>
+															<span class="menu-text">Report NPWP</span>
+														</a>
+													</li>
+												
+													<li class="menu-item {{ Request::segment(1) === 'NonNPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+														<a href="{{ url('NonNPWP/index') }}" class="menu-link">
+															<i class="menu-bullet menu-bullet-dot">
+																<span></span>
+															</i>
+															<span class="menu-text">Report non NPWP</span>
+														</a>
+													</li>
+												
+													<li class="menu-item {{ Request::segment(1) === 'DiscNPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+														<a href="{{ url('DiscNPWP/index') }}" class="menu-link">
+															<i class="menu-bullet menu-bullet-dot">
+																<span></span>
+															</i>
+															<span class="menu-text">Report Disc NPWP</span>
+														</a>
+													</li>
+												
+													<li class="menu-item {{ Request::segment(1) === 'DiscNonNPWP' ? 'menu-item-active' : '' }}" aria-haspopup="true">
+														<a href="{{ url('DiscNonNPWP/index') }}" class="menu-link">
+															<i class="menu-bullet menu-bullet-dot">
+																<span></span>
+															</i>
+															<span class="menu-text">Report Disc Non NPWP</span>
+														</a>
+													</li>
+															
+												</ul>
+											</div>
 										</li>
 												
 									</ul>
 								</div>
 							</li>
-						
+									
                         </ul>
                     </div>
                 </li>
