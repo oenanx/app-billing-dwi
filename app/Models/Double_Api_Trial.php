@@ -14,8 +14,8 @@ class Double_Api_Trial extends Model
     const CREATE_AT = 'created_at';
     const UPDATE_AT = 'updated_at';
 
-	//id,customerno,code,message,phone_input,phone,tanggal,messages,start_time,finish_time,noapi_id,created_at,updated_at,fstatus
-    protected $fillable = ['customerno','code','message','phone_input','phone','tanggal','messages','start_time','finish_time','noapi_id','fstatus']; 
+	//id,customerno,code,message,phone_input,phone,tanggal,messages,start_time,finish_time,noapi_id,created_at,updated_at,fstatus,ftype
+    protected $fillable = ['customerno','code','message','phone_input','phone','tanggal','messages','start_time','finish_time','noapi_id','fstatus','ftype']; 
 
     public function scopeGeneralSearch(Builder $query, string $search): Builder
     {

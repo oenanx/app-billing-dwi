@@ -14,8 +14,8 @@ class Reverse_Api_Postpaid extends Model
     const CREATE_AT = 'created_at';
     const UPDATE_AT = 'updated_at';
 
-	//id,customerno,code,message,phoneno,nik,phone,tanggal,messages,start_time,finish_time,noapi_id,created_at,updated_at,fstatus
-    protected $fillable = ['customerno','code','message','phoneno','nik','phone','tanggal','messages','start_time','finish_time','noapi_id','fstatus']; 
+	//id,customerno,code,message,phoneno,nik,phone,tanggal,messages,start_time,finish_time,noapi_id,created_at,updated_at,fstatus,ftype,fdouble_skriptrace
+    protected $fillable = ['customerno','code','message','phoneno','nik','phone','tanggal','messages','start_time','finish_time','noapi_id','fstatus','ftype','fdouble_skriptrace']; 
 
     public function scopeGeneralSearch(Builder $query, string $search): Builder
     {

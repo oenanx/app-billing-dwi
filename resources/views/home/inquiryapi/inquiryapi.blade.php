@@ -41,7 +41,7 @@
                 </div>
 			</div>
 		</div>
-		<div class="datatable datatable-bordered datatable-head-custom" id="Show-Tables" style="width:100%; font-size: 8pt; height: auto;">
+		<div class="datatable datatable-bordered datatable-head-custom table-container1" id="Show-Tables" style="width:100%; font-size: 8pt; height: auto;">
 
 		</div>
 	</div>
@@ -67,7 +67,7 @@
 				<!--<div class="datatable datatable-bordered datatable-head-custom" id="Show-TablesBSPostpaid" style="width:100%; font-size: 8pt; height: auto;">
 
 				</div>-->
-				<table class="table table-bordered table-hover" id="Show-TablesBSPostpaid" style="font-size:8pt; width:100%;">
+				<table class="table table-bordered table-hover table-container" id="Show-TablesBSPostpaid" style="font-size:8pt; width:100%;">
 					<thead bgcolor="#ffdcdc" align="center">
 						<tr>
 							<th><center>Invoice No.</center></th>
@@ -80,7 +80,6 @@
 						</tr>
 					</thead>
 				</table>
-
 
 			</div>
 			<div class="modal-footer">
@@ -136,7 +135,7 @@
 				<!--<div class="datatable datatable-bordered datatable-head-custom" id="Show-TablesBSPostpaid" style="width:100%; font-size: 8pt; height: auto;">
 
 				</div>-->
-				<table class="table table-bordered table-hover" id="Show-TablesBSPrepaid" style="font-size:8pt; width:100%;">
+				<table class="table table-bordered table-hover table-container" id="Show-TablesBSPrepaid" style="font-size:8pt; width:100%;">
 					<thead bgcolor="#ffdcdc" align="center">
 						<tr>
 							<th><center>Invoice No.</center></th>
@@ -187,12 +186,46 @@
 </div>
 
 <style type="text/css">
-	.modal-content {
-		height: 100%;
-		border-radius: 10px;
-		color:#333;
-		overflow:auto;
-	}
+.modal-content {
+	max-height: 90vh;
+	border-radius: 10px;
+	color: #333;
+	overflow: auto;
+}
+
+th, td { white-space: nowrap; }
+div.dataTables_wrapper {
+	margin: 0 auto;
+}
+
+/* Container defines the viewport size and allows scrolling */
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+/* Force the header elements to stay stuck at the top */
+.table-container th {
+    position: sticky;
+    top: 0;
+    background-color: #FFDCDC !important; /* Required: blocks content from showing underneath */
+    z-index: 10;           /* Keeps headers layered above row text */
+}
+
+/* Container defines the viewport size and allows scrolling */
+.table-container1 {
+    max-height: 290px;
+    overflow-y: auto;
+    border: 0px solid #ccc;
+}
+
+/* Force the header elements to stay stuck at the top */
+.table-container1 th {
+    position: sticky;
+    top: 0;
+    z-index: 10;           /* Keeps headers layered above row text */
+}
 </style>
 
 

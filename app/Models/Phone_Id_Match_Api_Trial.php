@@ -14,8 +14,8 @@ class Phone_Id_Match_Api_Trial extends Model
     const CREATE_AT = 'created_at';
     const UPDATE_AT = 'updated_at';
 
-	//id,customerno,code,message,phoneno,nik,phone,tanggal,age,messages,result,start_time,finish_time,noapi_id,created_at,updated_at,fstatus
-    protected $fillable = ['customerno','code','message','phoneno','nik','phone','tanggal','age','messages','result','start_time','finish_time','noapi_id','fstatus']; 
+	//id,customerno,code,message,phoneno,nik,phone,tanggal,age,messages,result,start_time,finish_time,noapi_id,created_at,updated_at,fstatusftype
+    protected $fillable = ['customerno','code','message','phoneno','nik','phone','tanggal','age','messages','result','start_time','finish_time','noapi_id','fstatus','ftype']; 
 
     public function scopeGeneralSearch(Builder $query, string $search): Builder
     {

@@ -110,28 +110,39 @@ class MaintenancePostpaid extends Controller
 			
 			//Jika di table sum_validno_postpaid dan table sum_skiptrace_postpaid pada period tersebut sudah ada data
 			//maka, datanya di hapus dulu lalu di insert ulang.
-            $delvalidno		= DB::table('sum_validno_postpaid')->where('sum_validno_postpaid.period',$period2)->delete();
-            $delskiptrace	= DB::table('sum_skiptrace_postpaid')->where('sum_skiptrace_postpaid.period',$period2)->delete();
-            $delidmatch 	= DB::table('sum_idmatch_postpaid')->where('sum_idmatch_postpaid.period',$period2)->delete();
-            $delreverse 	= DB::table('sum_reverse_postpaid')->where('sum_reverse_postpaid.period',$period2)->delete();
-            $deldemography	= DB::table('sum_demography_postpaid')->where('sum_demography_postpaid.period',$period2)->delete();
-            $delincome		= DB::table('sum_income_postpaid')->where('sum_income_postpaid.period',$period2)->delete();
-            $delphonehist	= DB::table('sum_phonehistory_postpaid')->where('sum_phonehistory_postpaid.period',$period2)->delete();
-            $delphonehist2	= DB::table('sum_phonehistory_365_postpaid')->where('sum_phonehistory_365_postpaid.period',$period2)->delete();
-            $delphonehist3	= DB::table('sum_phonehistory_365_dates_postpaid')->where('sum_phonehistory_365_dates_postpaid.period',$period2)->delete();
-            $delsliksumm	= DB::table('sum_sliksummary_postpaid')->where('sum_sliksummary_postpaid.period',$period2)->delete();
-            $delidverify	= DB::table('sum_idverification_postpaid')->where('sum_idverification_postpaid.period',$period2)->delete();
-            $deldemo_foto	= DB::table('sum_demography_photo_postpaid')->where('sum_demography_photo_postpaid.period',$period2)->delete();
-			$deladdr_ver	= DB::table('sum_address_verification_postpaid')->where('sum_address_verification_postpaid.period',$period2)->delete();
-			$delnegatifrec	= DB::table('sum_negatif_postpaid')->where('sum_negatif_postpaid.period',$period2)->delete();			
-			$delhome_addr	= DB::table('sum_home_address_postpaid')->where('sum_home_address_postpaid.period',$period2)->delete();
-			$delwork_addr	= DB::table('sum_office_address_postpaid')->where('sum_office_address_postpaid.period',$period2)->delete();
-            $delslikdetail	= DB::table('sum_slikdetail_postpaid')->where('sum_slikdetail_postpaid.period',$period2)->delete();
-			$delphone_age	= DB::table('sum_phone_age_postpaid')->where('sum_phone_age_postpaid.period',$period2)->delete();
-			$delphone_idm	= DB::table('sum_phone_id_match_postpaid')->where('sum_phone_id_match_postpaid.period',$period2)->delete();
-			$deldouble		= DB::table('sum_double_postpaid')->where('sum_double_postpaid.period',$period2)->delete();
-			$delcellpro		= DB::table('sum_validno_pro_postpaid')->where('sum_validno_pro_postpaid.period',$period2)->delete();
-			$delwavalid		= DB::table('sum_wa_validation_postpaid')->where('sum_wa_validation_postpaid.period',$period2)->delete();
+            $delvalidno		= DB::table('sum_validno_postpaid')->where('period',$period2)->delete();
+            $delskiptrace	= DB::table('sum_skiptrace_postpaid')->where('period',$period2)->delete();
+            $delidmatch 	= DB::table('sum_idmatch_postpaid')->where('period',$period2)->delete();
+            $delreverse 	= DB::table('sum_reverse_postpaid')->where('period',$period2)->delete();
+            $deldemography	= DB::table('sum_demography_postpaid')->where('period',$period2)->delete();
+            $delincome		= DB::table('sum_income_postpaid')->where('period',$period2)->delete();
+            $delphonehist	= DB::table('sum_phonehistory_postpaid')->where('period',$period2)->delete();
+            $delphonehist2	= DB::table('sum_phonehistory_365_postpaid')->where('period',$period2)->delete();
+            $delphonehist3	= DB::table('sum_phonehistory_365_dates_postpaid')->where('period',$period2)->delete();
+            $delsliksumm	= DB::table('sum_sliksummary_postpaid')->where('period',$period2)->delete();
+            $delidverify	= DB::table('sum_idverification_postpaid')->where('period',$period2)->delete();
+            $deldemo_foto	= DB::table('sum_demography_photo_postpaid')->where('period',$period2)->delete();
+			$deladdr_ver	= DB::table('sum_address_verification_postpaid')->where('period',$period2)->delete();
+			$delnegatifrec	= DB::table('sum_negatif_postpaid')->where('period',$period2)->delete();			
+			$delhome_addr	= DB::table('sum_home_address_postpaid')->where('period',$period2)->delete();
+			$delwork_addr	= DB::table('sum_office_address_postpaid')->where('period',$period2)->delete();
+            $delslikdetail	= DB::table('sum_slikdetail_postpaid')->where('period',$period2)->delete();
+			$delphone_age	= DB::table('sum_phone_age_postpaid')->where('period',$period2)->delete();
+			$delphone_idm	= DB::table('sum_phone_id_match_postpaid')->where('period',$period2)->delete();
+			$deldouble		= DB::table('sum_double_postpaid')->where('period',$period2)->delete();
+			
+			$deloptcellpro	= DB::table('sum_optima_validno_pro_postpaid')->where('period',$period2)->delete();
+			
+			$delcellpro		= DB::table('sum_validno_pro_postpaid')->where('period',$period2)->delete();
+			$delwavalid		= DB::table('sum_wa_validation_postpaid')->where('period',$period2)->delete();
+			$deltrueid		= DB::table('sum_true_phoneid_postpaid')->where('period',$period2)->delete();
+			$delfraud		= DB::table('sum_fraud_check_postpaid')->where('period',$period2)->delete();
+            
+			$delskiptracev2	= DB::table('sum_skiptrace_v2_postpaid')->where('period',$period2)->delete();
+            $delreversev2 	= DB::table('sum_reverse_v2_postpaid')->where('period',$period2)->delete();
+			$delphone_agev2	= DB::table('sum_phone_age_v2_postpaid')->where('period',$period2)->delete();
+			$delphone_idmv2	= DB::table('sum_phone_id_match_v2_postpaid')->where('period',$period2)->delete();
+			$deldoublev2	= DB::table('sum_double_v2_postpaid')->where('period',$period2)->delete();
 			
 			//GET USAGE VALIDNO API POSTPAID FROM Dashboard
 			$get1  = DB::connection('mysql_4')->select("CALL sp_trx_validno_monthly('".$period2."');");
@@ -148,6 +159,22 @@ class MaintenancePostpaid extends Controller
 				$rate 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->select('rates')->first();
 				$rates 			= $rate->rates;
 				$totalamount	= ($rates * $sum_success);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_validno_postpaid')->insert(
 					[
@@ -177,6 +204,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_nik);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_skiptrace_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -202,6 +245,22 @@ class MaintenancePostpaid extends Controller
 				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->select('rates')->first();
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_idmatch_postpaid')->insert(
 					[
@@ -229,6 +288,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_reverse_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -255,6 +330,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_demography_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -280,6 +371,22 @@ class MaintenancePostpaid extends Controller
 				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->select('rates')->first();
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_income_postpaid')->insert(
 					[
@@ -308,6 +415,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 7)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 7)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_phonehistory_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -333,6 +456,22 @@ class MaintenancePostpaid extends Controller
 				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->select('rates')->first();
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_sliksummary_postpaid')->insert(
 					[
@@ -360,6 +499,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_idverification_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -385,6 +540,22 @@ class MaintenancePostpaid extends Controller
 				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->select('rates')->first();
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_demography_photo_postpaid')->insert(
 					[
@@ -412,11 +583,27 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_address_verification_postpaid')->insert(
 					[
 						'period'		=> $period,
 						'customerno'	=> $customerno,
-						'sum_noapi_id'	=> $sum_noapi_id,
+						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
 						'rates'			=> $rates2,
 						'totalamount'	=> $totalamount2
@@ -438,11 +625,27 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_negatif_postpaid')->insert(
 					[
 						'period'		=> $period,
 						'customerno'	=> $customerno,
-						'sum_noapi_id'	=> $sum_noapi_id,
+						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
 						'rates'			=> $rates2,
 						'totalamount'	=> $totalamount2
@@ -464,11 +667,27 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_home_address_postpaid')->insert(
 					[
 						'period'		=> $period,
 						'customerno'	=> $customerno,
-						'sum_noapi_id'	=> $sum_noapi_id,
+						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
 						'rates'			=> $rates2,
 						'totalamount'	=> $totalamount2
@@ -490,11 +709,27 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_office_address_postpaid')->insert(
 					[
 						'period'		=> $period,
 						'customerno'	=> $customerno,
-						'sum_noapi_id'	=> $sum_noapi_id,
+						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
 						'rates'			=> $rates2,
 						'totalamount'	=> $totalamount2
@@ -513,14 +748,25 @@ class MaintenancePostpaid extends Controller
 				$get_date		= $row2->get_date;
 				$product_api_id	= $row2->product_api_id;
 
-				$rate2 			= DB::table('master_product_api_customer')
-									->where('customerno', $customerno)
-									->where('product_api_id', $product_api_id)
-									->select('rates')
-									->first();
-									
+				$rate2			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();									
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 15)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 15)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_phonehistory_365_postpaid')->insert(
 					[
@@ -548,6 +794,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_slikdetail_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -573,6 +835,22 @@ class MaintenancePostpaid extends Controller
 				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->select('rates')->first();
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_phone_age_postpaid')->insert(
 					[
@@ -600,6 +878,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_phone_id_match_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -623,14 +917,26 @@ class MaintenancePostpaid extends Controller
 				$get_date		= $row2->get_date;
 				$product_api_id	= $row2->product_api_id;
 
-				$rate2 			= DB::table('master_product_api_customer')
-									->where('customerno', $customerno)
-									->where('product_api_id', $product_api_id)
-									->select('rates')
-									->first();
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();
 									
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 19)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 19)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_phonehistory_365_dates_postpaid')->insert(
 					[
@@ -658,7 +964,65 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_double_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE Optima Cellular Validation Pro API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_optima_cellularno_validation_pro_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_optima_validno_pro_postpaid')->insert(
 					[
 						'period'		=> $period,
 						'customerno'	=> $customerno,
@@ -683,6 +1047,22 @@ class MaintenancePostpaid extends Controller
 				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->select('rates')->first();
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
 
 				DB::table('sum_wa_validation_postpaid')->insert(
 					[
@@ -710,6 +1090,22 @@ class MaintenancePostpaid extends Controller
 				$rates2 		= $rate2->rates;
 				$totalamount2	= ($rates2 * $sum_noapi_id);
 
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
 				DB::table('sum_validno_pro_postpaid')->insert(
 					[
 						'period'		=> $period,
@@ -721,6 +1117,303 @@ class MaintenancePostpaid extends Controller
 					]
 				);
 			}
+			
+			//GET USAGE True PhoneId Check API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_true_phoneid_check_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_true_phoneid_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE Fraud Check API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_fraud_check_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_fraud_check_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+
+
+			
+			//GET USAGE SKIPTRACE V2 API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_skiptrace_v2_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_nik		= $row2->sum_nik;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_nik);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_skiptrace_v2_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_nik'		=> $sum_nik,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE REVERSE SKIPTRACE V2 API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_reverse_v2_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_reverse_v2_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE PHONE AGE V2 API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_phone_age_v2_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_phone_age_v2_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE PHONE ID MATCH V2 API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_phone_id_match_v2_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_phone_id_match_v2_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+			
+			//GET USAGE DOUBLE SKIPTRACE V2 API POSTPAID FROM Dashboard
+			$get2  = DB::connection('mysql_4')->select("CALL sp_trx_double_v2_monthly('".$period2."');");
+			//dd($get);
+			foreach($get2 as $row2)
+			{
+				$period			= $row2->period;
+				$customerno		= $row2->customerno;
+				$sum_noapi_id	= $row2->sum_noapi_id;
+				$get_date		= $row2->get_date;
+
+				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->select('rates')->first();
+				$rates2 		= $rate2->rates;
+				$totalamount2	= ($rates2 * $sum_noapi_id);
+
+				//Per Hits
+				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->where('billcycleid', 1)->select('rates')->first(); 
+				//if (isset($rate1) || !is_null($rate1))
+				//{
+					//$rates		= $rate1->rates;
+					//$totalamount	= ($rates1 * $sum_success);		
+				//}
+				
+				//Tiering
+				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				//if (isset($rate2) || !is_null($rate2))
+				//{
+				//	$rates			= $rate2->rates;
+				//	$totalamount	= ($rates * $sum_success); 
+				//}
+
+				DB::table('sum_double_v2_postpaid')->insert(
+					[
+						'period'		=> $period,
+						'customerno'	=> $customerno,
+						'sum_api_id'	=> $sum_noapi_id,
+						'get_date'		=> $get_date,
+						'rates'			=> $rates2,
+						'totalamount'	=> $totalamount2
+					]
+				);
+			}
+
 
 
             $query1 = DB::table('master_maintenance_all')
@@ -1085,10 +1778,10 @@ class MaintenancePostpaid extends Controller
                 $delbsdetail4 = DB::table('bs_postpaid_detail')->where('PERIOD', $period)->where('AMOUNT', 0)->delete();				
 
 				//1. Usage Validation Number API Postpaid
-				$data_a = DB::table('sum_validno_postpaid')
+				/*$data_a = DB::table('sum_validno_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Validation Number API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Validation Number API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_success,0) as tot_usage'))
 						->get();
 
 				foreach($data_a as $row_a)
@@ -1096,24 +1789,27 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_a->total;
                     $cust		= $row_a->customerno;
                     $deskripsi	= $row_a->deskripsi;
+					$rates		= $row_a->rates;
+					$tot_usage	= $row_a->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
                             'prss_id' => 18
                         ]
                     );
-                }
+                }*/
 
 				//2. Usage Skiptrace API Postpaid
 				$data_b = DB::table('sum_skiptrace_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Skiptrace API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Skiptrace API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_b as $row_b)
@@ -1121,11 +1817,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_b->total;
                     $cust		= $row_b->customerno;
                     $deskripsi	= $row_b->deskripsi;
+					$rates		= $row_b->rates;
+					$tot_usage	= $row_b->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1138,7 +1837,7 @@ class MaintenancePostpaid extends Controller
 				$data_e = DB::table('sum_idmatch_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Id. Match API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Id. Match API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_e as $row_e)
@@ -1146,11 +1845,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_e->total;
                     $cust		= $row_e->customerno;
                     $deskripsi	= $row_e->deskripsi;
+					$rates		= $row_e->rates;
+					$tot_usage	= $row_e->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1163,7 +1865,7 @@ class MaintenancePostpaid extends Controller
 				$data_j = DB::table('sum_reverse_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Reverse Skiptrace API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Reverse Skiptrace API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_j as $row_j)
@@ -1171,11 +1873,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_j->total;
                     $cust		= $row_j->customerno;
                     $deskripsi	= $row_j->deskripsi;
+					$rates		= $row_j->rates;
+					$tot_usage	= $row_j->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1188,7 +1893,7 @@ class MaintenancePostpaid extends Controller
 				$data_d = DB::table('sum_demography_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Demography Check API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Demography Check API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_d as $row_d)
@@ -1196,11 +1901,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_d->total;
                     $cust		= $row_d->customerno;
                     $deskripsi	= $row_d->deskripsi;
+					$rates		= $row_d->rates;
+					$tot_usage	= $row_d->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1213,7 +1921,7 @@ class MaintenancePostpaid extends Controller
 				$data_g = DB::table('sum_income_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Income Estimate API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Income Estimate API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_g as $row_g)
@@ -1221,11 +1929,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_g->total;
                     $cust		= $row_g->customerno;
                     $deskripsi	= $row_g->deskripsi;
+					$rates		= $row_g->rates;
+					$tot_usage	= $row_g->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1238,7 +1949,7 @@ class MaintenancePostpaid extends Controller
 				$data_h = DB::table('sum_phonehistory_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Phone History API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Phone History API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_h as $row_h)
@@ -1246,11 +1957,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_h->total;
                     $cust		= $row_h->customerno;
                     $deskripsi	= $row_h->deskripsi;
+					$rates		= $row_h->rates;
+					$tot_usage	= $row_h->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1263,7 +1977,7 @@ class MaintenancePostpaid extends Controller
 				$data_i = DB::table('sum_sliksummary_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Financial Insight Basic API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Financial Insight Basic API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_i as $row_i)
@@ -1271,11 +1985,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_i->total;
                     $cust		= $row_i->customerno;
                     $deskripsi	= $row_i->deskripsi;
+					$rates		= $row_i->rates;
+					$tot_usage	= $row_i->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1288,7 +2005,7 @@ class MaintenancePostpaid extends Controller
 				$data_f = DB::table('sum_idverification_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Id. Verification API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Id. Verification API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_f as $row_f)
@@ -1296,11 +2013,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_f->total;
                     $cust		= $row_f->customerno;
                     $deskripsi	= $row_f->deskripsi;
+					$rates		= $row_f->rates;
+					$tot_usage	= $row_f->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1313,7 +2033,7 @@ class MaintenancePostpaid extends Controller
 				$data_c = DB::table('sum_demography_photo_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Demography Photo Check API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Demography Photo Check API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_c as $row_c)
@@ -1321,11 +2041,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_c->total;
                     $cust		= $row_c->customerno;
                     $deskripsi	= $row_c->deskripsi;
+					$rates		= $row_c->rates;
+					$tot_usage	= $row_c->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1338,7 +2061,7 @@ class MaintenancePostpaid extends Controller
 				$data_11 = DB::table('sum_address_verification_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Address Validation API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Address Validation API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_11 as $row_11)
@@ -1346,11 +2069,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_11->total;
                     $cust		= $row_11->customerno;
                     $deskripsi	= $row_11->deskripsi;
+					$rates		= $row_11->rates;
+					$tot_usage	= $row_11->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1363,7 +2089,7 @@ class MaintenancePostpaid extends Controller
 				$data_12 = DB::table('sum_negatif_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Negative Record API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Negative Record API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_12 as $row_12)
@@ -1371,11 +2097,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_12->total;
                     $cust		= $row_12->customerno;
                     $deskripsi	= $row_12->deskripsi;
+					$rates		= $row_12->rates;
+					$tot_usage	= $row_12->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1388,7 +2117,7 @@ class MaintenancePostpaid extends Controller
 				$data_13 = DB::table('sum_home_address_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Home Address API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Home Address API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_13 as $row_13)
@@ -1396,11 +2125,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_13->total;
                     $cust		= $row_13->customerno;
                     $deskripsi	= $row_13->deskripsi;
+					$rates		= $row_13->rates;
+					$tot_usage	= $row_13->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1413,7 +2145,7 @@ class MaintenancePostpaid extends Controller
 				$data_14 = DB::table('sum_office_address_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Office Address API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Office Address API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_14 as $row_14)
@@ -1421,11 +2153,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_14->total;
                     $cust		= $row_14->customerno;
                     $deskripsi	= $row_14->deskripsi;
+					$rates		= $row_14->rates;
+					$tot_usage	= $row_14->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1438,7 +2173,7 @@ class MaintenancePostpaid extends Controller
 				$data_15 = DB::table('sum_phonehistory_365_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Phone History 365 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Phone History 365 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_15 as $row_15)
@@ -1446,11 +2181,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_15->total;
                     $cust		= $row_15->customerno;
                     $deskripsi	= $row_15->deskripsi;
+					$rates		= $row_15->rates;
+					$tot_usage	= $row_15->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1463,7 +2201,7 @@ class MaintenancePostpaid extends Controller
 				$data_16 = DB::table('sum_slikdetail_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Financial Insight Plus API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Financial Insight Plus API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
 						->get();
 
 				foreach($data_16 as $row_16)
@@ -1471,11 +2209,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_16->total;
                     $cust		= $row_16->customerno;
                     $deskripsi	= $row_16->deskripsi;
+					$rates		= $row_16->rates;
+					$tot_usage	= $row_16->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1488,7 +2229,7 @@ class MaintenancePostpaid extends Controller
 				$data_17 = DB::table('sum_phone_age_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Phone Age API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Phone Age API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_17 as $row_17)
@@ -1496,11 +2237,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_17->total;
                     $cust		= $row_17->customerno;
                     $deskripsi	= $row_17->deskripsi;
+					$rates		= $row_17->rates;
+					$tot_usage	= $row_17->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1513,7 +2257,7 @@ class MaintenancePostpaid extends Controller
 				$data_18 = DB::table('sum_phone_id_match_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Phone Id. Match API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Phone Id. Match API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_18 as $row_18)
@@ -1521,11 +2265,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_18->total;
                     $cust		= $row_18->customerno;
                     $deskripsi	= $row_18->deskripsi;
+					$rates		= $row_18->rates;
+					$tot_usage	= $row_18->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1538,7 +2285,7 @@ class MaintenancePostpaid extends Controller
 				$data_19 = DB::table('sum_phonehistory_365_dates_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Phone History 365 Dates API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Phone History 365 Dates API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_noapi_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_19 as $row_19)
@@ -1546,11 +2293,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_19->total;
                     $cust		= $row_19->customerno;
                     $deskripsi	= $row_19->deskripsi;
+					$rates		= $row_19->rates;
+					$tot_usage	= $row_19->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1563,7 +2313,7 @@ class MaintenancePostpaid extends Controller
 				$data_20 = DB::table('sum_double_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Double Skiptrace API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Double Skiptrace API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_20 as $row_20)
@@ -1571,11 +2321,42 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_20->total;
                     $cust		= $row_20->customerno;
                     $deskripsi	= $row_20->deskripsi;
+					$rates		= $row_20->rates;
+					$tot_usage	= $row_20->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//21. USAGE Optima Cellular Validation Pro API POSTPAID FROM Dashboard
+				$data_21 = DB::table('sum_optima_validno_pro_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Optima Cellular Validation API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_21 as $row_21)
+                {
+                    $amount1	= $row_21->total;
+                    $cust		= $row_21->customerno;
+                    $deskripsi	= $row_21->deskripsi;
+					$rates		= $row_21->rates;
+					$tot_usage	= $row_21->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1588,7 +2369,7 @@ class MaintenancePostpaid extends Controller
 				$data_22 = DB::table('sum_wa_validation_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"WA Validation API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"WA Validation API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_22 as $row_22)
@@ -1596,11 +2377,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_22->total;
                     $cust		= $row_22->customerno;
                     $deskripsi	= $row_22->deskripsi;
+					$rates		= $row_22->rates;
+					$tot_usage	= $row_22->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1613,7 +2397,7 @@ class MaintenancePostpaid extends Controller
 				$data_23 = DB::table('sum_validno_pro_postpaid')
 						->where('customerno', $cust_no)
 						->where('period', $period2)
-						->select('customerno', DB::raw('"Cellular Validation Pro API Postpaid" AS deskripsi'), DB::raw('totalamount as total'))
+						->select('customerno', DB::raw('"Cellular Validation Pro API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
 						->get();
 
 				foreach($data_23 as $row_23)
@@ -1621,11 +2405,14 @@ class MaintenancePostpaid extends Controller
                     $amount1	= $row_23->total;
                     $cust		= $row_23->customerno;
                     $deskripsi	= $row_23->deskripsi;
+					$rates		= $row_23->rates;
+					$tot_usage	= $row_23->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
 
                     DB::table('bs_postpaid_detail')->insert(
                         [
                             'customerno' => $cust,
-                            'description' => $deskripsi,
+                            'description' => $descript,
                             'amount' => $amount1,
                             'period' => $period,
                             'period_service' => $periodsrvls,
@@ -1633,6 +2420,204 @@ class MaintenancePostpaid extends Controller
                         ]
                     );
                 }
+
+				//24. USAGE True PhoneId Check API POSTPAID FROM Dashboard
+				$data_24 = DB::table('sum_true_phoneid_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"True PhoneId Check API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_24 as $row_24)
+                {
+                    $amount1	= $row_24->total;
+                    $cust		= $row_24->customerno;
+                    $deskripsi	= $row_24->deskripsi;
+					$rates		= $row_24->rates;
+					$tot_usage	= $row_24->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//25. USAGE Fraud Check API POSTPAID FROM Dashboard
+				$data_25 = DB::table('sum_true_phoneid_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Fraud Check API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_25 as $row_25)
+                {
+                    $amount1	= $row_25->total;
+                    $cust		= $row_25->customerno;
+                    $deskripsi	= $row_25->deskripsi;
+					$rates		= $row_25->rates;
+					$tot_usage	= $row_25->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+
+				//26. Usage Skiptrace V2 API Postpaid
+				$data_26 = DB::table('sum_skiptrace_v2_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Skiptrace V2 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_nik,0) as tot_usage'))
+						->get();
+
+				foreach($data_26 as $row_26)
+                {
+                    $amount1	= $row_26->total;
+                    $cust		= $row_26->customerno;
+                    $deskripsi	= $row_26->deskripsi;
+					$rates		= $row_26->rates;
+					$tot_usage	= $row_26->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//27. USAGE Reverse Skiptrace V2 API POSTPAID FROM Dashboard
+				$data_27 = DB::table('sum_reverse_v2_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Reverse Skiptrace V2 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_27 as $row_27)
+                {
+                    $amount1	= $row_27->total;
+                    $cust		= $row_27->customerno;
+                    $deskripsi	= $row_27->deskripsi;
+					$rates		= $row_27->rates;
+					$tot_usage	= $row_27->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//28. USAGE Phone Age V2 API POSTPAID FROM Dashboard
+				$data_28 = DB::table('sum_phone_age_v2_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Phone Age V2 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_28 as $row_28)
+                {
+                    $amount1	= $row_28->total;
+                    $cust		= $row_28->customerno;
+                    $deskripsi	= $row_28->deskripsi;
+					$rates		= $row_28->rates;
+					$tot_usage	= $row_28->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//29. USAGE Phone Id Match V2 API POSTPAID FROM Dashboard
+				$data_29 = DB::table('sum_phone_id_match_v2_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Phone Id Match V2 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_29 as $row_29)
+                {
+                    $amount1	= $row_29->total;
+                    $cust		= $row_29->customerno;
+                    $deskripsi	= $row_29->deskripsi;
+					$rates		= $row_29->rates;
+					$tot_usage	= $row_29->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
+				//30. USAGE Double Skiptrace V2 API POSTPAID FROM Dashboard
+				$data_30 = DB::table('sum_double_v2_postpaid')
+						->where('customerno', $cust_no)
+						->where('period', $period2)
+						->select('customerno', DB::raw('"Double Skiptrace V2 API Postpaid" AS deskripsi'), DB::raw('totalamount as total'), DB::raw('FORMAT(rates,0) AS rates'), DB::raw('FORMAT(sum_api_id,0) as tot_usage'))
+						->get();
+
+				foreach($data_30 as $row_30)
+                {
+                    $amount1	= $row_30->total;
+                    $cust		= $row_30->customerno;
+                    $deskripsi	= $row_30->deskripsi;
+					$rates		= $row_30->rates;
+					$tot_usage	= $row_30->tot_usage;
+					$descript	= $deskripsi." ( ".$tot_usage." Hits X @ Rp. ".$rates.",- )";
+
+                    DB::table('bs_postpaid_detail')->insert(
+                        [
+                            'customerno' => $cust,
+                            'description' => $descript,
+                            'amount' => $amount1,
+                            'period' => $period,
+                            'period_service' => $periodsrvls,
+                            'prss_id' => 18
+                        ]
+                    );
+                }
+
 
 
                 //TOTAL USAGE
