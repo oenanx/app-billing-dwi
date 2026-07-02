@@ -53,6 +53,11 @@ use App\Exports\RptLogTrial11;
 use App\Exports\RptLogTrial12;
 use App\Exports\RptLogTrial13;
 use App\Exports\RptLogTrial14;
+use App\Exports\RptLogTrial17;
+use App\Exports\RptLogTrial18;
+use App\Exports\RptLogTrial20;
+use App\Exports\RptLogTrial21;
+
 use App\Exports\RptLogPostpaid1;
 use App\Exports\RptLogPostpaid2;
 use App\Exports\RptLogPostpaid3;
@@ -67,6 +72,10 @@ use App\Exports\RptLogPostpaid11;
 use App\Exports\RptLogPostpaid12;
 use App\Exports\RptLogPostpaid13;
 use App\Exports\RptLogPostpaid14;
+use App\Exports\RptLogPostpaid17;
+use App\Exports\RptLogPostpaid18;
+use App\Exports\RptLogPostpaid20;
+use App\Exports\RptLogPostpaid21;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -224,6 +233,7 @@ class InquiryApi extends Controller
 			$product	= $pieces[1];
 			$customerno	= $pieces[2];
 
+			/*
 			if ($product == 1) //Validation API
 			{
 				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
@@ -280,6 +290,7 @@ class InquiryApi extends Controller
 					}
 				}
 			}
+			*/
 			
 			if ($product == 2) //Skiptrace API
 			{
@@ -1594,6 +1605,591 @@ class InquiryApi extends Controller
 					}
 				}
 			}
+			
+			if ($product == 21) //Optima Cellular Validation API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
+								->where('customerno', $customerno)
+								->where('fcust', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
+								->where('customerno', $customerno)
+								->where('fcust', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
+								->where('customerno', $customerno)
+								->where('fcust', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 22) //WA Validation API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_whatsapp_validation_prepaid')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phone_number) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_whatsapp_validation_postpaid')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phone_number) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_whatsapp_validation_trial')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phone_number) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 23) //Cellular Validation Pro API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
+								->where('customerno', $customerno)
+								->where('fcust', 0)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
+								->where('customerno', $customerno)
+								->where('fcust', 0)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
+								->where('customerno', $customerno)
+								->where('fcust', 0)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 24) //True Phoneid Check API\
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_true_phoneid_check_prepaid')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_true_phoneid_check_postpaid')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_true_phoneid_check_trial')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 25) //Fraud Check API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_fraud_check_prepaid')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_fraud_check_postpaid')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_fraud_check_trial')
+								->where('customerno', $customerno)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 26) //Skiptrace V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_skiptrace_prepaid')
+								->where('customerno', $customerno)
+								->where('fdouble_skriptrace', 0)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(nik) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = QueryBuilder::for(Skiptrace_Api_Postpaid::class)
+								->where('customerno', $customerno)
+								->where('fdouble_skriptrace', 0)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(nik) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = QueryBuilder::for(Skiptrace_Api_Trial::class)
+								->where('customerno', $customerno)
+								->where('fdouble_skriptrace', 0)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(nik) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 27) //Reverse Skiptrace V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_reverse_prepaid')
+								->where('customerno', $customerno)
+								->where('fdouble_skriptrace', 0)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phoneno) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_reverse_postpaid')
+								->where('customerno', $customerno)
+								->where('fdouble_skriptrace', 0)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phoneno) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_reverse_trial')
+								->where('customerno', $customerno)
+								->where('fdouble_skriptrace', 0)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phoneno) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 28) //Phone Age V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_phone_age_prepaid')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_phone_age_postpaid')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_phone_age_trial')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 29) //Phone Id Match V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_phone_id_match_prepaid')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_phone_id_match_postpaid')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_phone_id_match_trial')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
+			if ($product == 30) //Double Skiptrace V2 API
+			{
+				$sts = DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_double_prepaid')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phone_input) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_double_postpaid')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phone_input) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_double_trial')
+								->where('customerno', $customerno)
+								->where('ftype', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phone_input) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+								->groupBy('noapi_id')
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
 		}
         else
         {
@@ -2695,6 +3291,525 @@ class InquiryApi extends Controller
 					ob_end_clean();
 
 					return Excel::download(new RptLogTrial8($data), 'Log_DataWiz_API_Trial_Double_Skiptrace_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+
+			if ($product == 21) //Optima Cellular Validation API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
+							->where('customerno', $customerno)
+							->where('fcust', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_Optima_Cellular_Validation_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
+							->where('customerno', $customerno)
+							->where('fcust', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid21($data), 'Log_DataWiz_API_Optima_Cellular_Validation_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
+							->where('customerno', $customerno)
+							->where('fcust', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_Optima_Cellular_Validation_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+
+			if ($product == 22) //WA Validation API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_whatsapp_validation_prepaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('is_registered AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial20($data), 'Log_DataWiz_API_Whatsapp_Validation_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_whatsapp_validation_postpaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('is_registered AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid20($data), 'Log_DataWiz_API_Whatsapp_Validation_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_whatsapp_validation_trial')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('is_registered AS status'))
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial20($data), 'Log_DataWiz_API_Whatsapp_Validation_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+
+			if ($product == 23) //Cellular Validation Pro API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
+							->where('customerno', $customerno)
+							->where('fcust', 0)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
+							->where('customerno', $customerno)
+							->where('fcust', 0)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid21($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
+							->where('customerno', $customerno)
+							->where('fcust', 0)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+
+			if ($product == 24) //True Phoneid Check API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_true_phoneid_check_prepaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_True_Phoneid_Check_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_true_phoneid_check_postpaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_True_Phoneid_Check_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_true_phoneid_check_trial')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_True_Phoneid_Check_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+
+			if ($product == 25) //Fraud Check API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_fraud_check_prepaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_Fraud_Check_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_fraud_check_postpaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_Fraud_Check_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_fraud_check_trial')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_Fraud_Check_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+			
+			if ($product == 26) //Skiptrace V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_skiptrace_prepaid')
+							->where('customerno', $customerno)
+							->where('fdouble_skriptrace', 0)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(nik) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial2($data), 'Log_DataWiz_API_Prepaid_Skiptrace-V2_No_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = QueryBuilder::for(Skiptrace_Api_Postpaid::class)
+							->where('customerno', $customerno)
+							->where('fdouble_skriptrace', 0)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(nik) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid2($data), 'Log_DataWiz_API_Postpaid_Skiptrace-V2_No_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = QueryBuilder::for(Skiptrace_Api_Trial::class)
+							->where('customerno', $customerno)
+							->where('fdouble_skriptrace', 0)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(nik) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial2($data), 'Log_DataWiz_API_Trial_Skiptrace-V2_No_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+			
+			if ($product == 27) //Reverse Skiptrace V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_reverse_prepaid')
+							->where('customerno', $customerno)
+							->where('fdouble_skriptrace', 0)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('code AS status_hit'),DB::raw('phoneno AS data_input'),DB::raw('created_at AS tgl_hit'),DB::raw('nik AS nik'),DB::raw('tanggal AS reg_date'))
+							->orderBy('tgl_hit','DESC')
+							->orderBy('reg_date','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial4($data), 'Log_DataWiz_API_Reverse_Skiptrace-V2_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_reverse_postpaid')
+							->where('customerno', $customerno)
+							->where('fdouble_skriptrace', 0)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('code AS status_hit'),DB::raw('phoneno AS data_input'),DB::raw('created_at AS tgl_hit'),DB::raw('nik AS nik'),DB::raw('tanggal AS reg_date'))
+							->orderBy('tgl_hit','DESC')
+							->orderBy('reg_date','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid4($data), 'Log_DataWiz_API_Reverse_Skiptrace-V2_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_reverse_trial')
+							->where('customerno', $customerno)
+							->where('fdouble_skriptrace', 0)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('code AS status_hit'),DB::raw('phoneno AS data_input'),DB::raw('created_at AS tgl_hit'),DB::raw('nik AS nik'),DB::raw('tanggal AS reg_date'))
+							->orderBy('tgl_hit','DESC')
+							->orderBy('reg_date','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial4($data), 'Log_DataWiz_API_Reverse_Skiptrace-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+			
+			if ($product == 28) //Phone Age V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_phone_age_prepaid')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phoneno AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('CONCAT(age," days.") AS age'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial17($data), 'Log_DataWiz_API_Phone_Age-V2_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_phone_age_postpaid')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phoneno AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('CONCAT(age," days.") AS age'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid17($data), 'Log_DataWiz_API_Phone_Age-V2_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_phone_age_trial')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phoneno AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('CONCAT(age," days.") AS age'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial17($data), 'Log_DataWiz_API_Phone_Age-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+			
+			if ($product == 29) //Phone Id Match V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_phone_id_match_prepaid')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phoneno AS data_input'), DB::raw('ktp AS data_input2'), DB::raw('created_at AS tgl_hit'), 'result')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial18($data), 'Log_DataWiz_API_Phone_Id_Match-V2_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_phone_id_match_postpaid')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phoneno AS data_input'), DB::raw('ktp AS data_input2'), DB::raw('created_at AS tgl_hit'), 'result')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid18($data), 'Log_DataWiz_API_Phone_Id_Match-V2_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_phone_id_match_trial')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phoneno AS data_input'), DB::raw('ktp AS data_input2'), DB::raw('created_at AS tgl_hit'), 'result')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial18($data), 'Log_DataWiz_API_Phone_Id_Match-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+			
+			if ($product == 30) //Double Skiptrace V2 API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_double_prepaid')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_input AS data_input'), DB::raw('created_at AS tgl_hit'), 'phone', 'tanggal')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial8($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_double_postpaid')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_input AS data_input'), DB::raw('created_at AS tgl_hit'), 'phone', 'tanggal')
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid8($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_double_trial')
+							->where('customerno', $customerno)
+							->where('ftype', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_input AS data_input'), DB::raw('created_at AS tgl_hit'), 'phone', 'tanggal')
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial8($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
 				}
 			}
 		}

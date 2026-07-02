@@ -74,7 +74,7 @@
 				<div class="col-lg-6 col-lg-6">
 					<div class="form-group">
 						<select id="months" name="months" class="form-control input-sm" required >
-							<option value="" selected="selected">Select Month...</option>
+							<option value="" selected="selected">Select Invoice Month...</option>
 							<option value="01">JANUARY</option>
 							<option value="02">FEBRUARY</option>
 							<option value="03">MARCH</option>
@@ -133,7 +133,7 @@
 				<div class="col-lg-6 col-lg-6">
 					<div class="form-group">
 						<select id="month" name="month" class="form-control input-sm" required >
-							<option value="" selected="selected">Select Month...</option>
+							<option value="" selected="selected">Select Invoice Month...</option>
 							<option value="01">JANUARY</option>
 							<option value="02">FEBRUARY</option>
 							<option value="03">MARCH</option>

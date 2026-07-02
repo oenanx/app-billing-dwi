@@ -48,6 +48,7 @@ use App\Exports\RptLogTrial14;
 use App\Exports\RptLogTrial17;
 use App\Exports\RptLogTrial18;
 use App\Exports\RptLogTrial20;
+use App\Exports\RptLogTrial21;
 use App\Exports\RptLogPostpaid1;
 use App\Exports\RptLogPostpaid2;
 use App\Exports\RptLogPostpaid3;
@@ -65,6 +66,7 @@ use App\Exports\RptLogPostpaid14;
 use App\Exports\RptLogPostpaid17;
 use App\Exports\RptLogPostpaid18;
 use App\Exports\RptLogPostpaid20;
+use App\Exports\RptLogPostpaid21;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -216,7 +218,9 @@ class ViewUsageAPI extends Controller
 			$periode	= $pieces[0];
 			$product	= $pieces[1];
 			$customerno	= $pieces[2];
+			//dd($product);
 
+			/*
 			if ($product == 1) //Validation API
 			{
 				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
@@ -273,6 +277,7 @@ class ViewUsageAPI extends Controller
 					}
 				}
 			}
+			*/
 			
 			if ($product == 2) //Skiptrace API
 			{
@@ -1612,6 +1617,63 @@ class ViewUsageAPI extends Controller
 				}
 			}
 			
+			if ($product == 21) //Optima Cellular Validation API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
+								->where('customerno', $customerno)
+								->where('fcust', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
+								->where('customerno', $customerno)
+								->where('fcust', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					if ($request->ajax()) 
+					{
+						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
+								->where('customerno', $customerno)
+								->where('fcust', 1)
+								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
+								->orderBy('id','DESC')
+								->paginate($request->query('perpage', 1000000))
+								->appends(request()->query());
+
+						return response()->paginator($data);
+					}
+				}
+			}
+			
 			if ($product == 22) //WA Validation API
 			{
 				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
@@ -1680,6 +1742,7 @@ class ViewUsageAPI extends Controller
 					{
 						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
 								->where('customerno', $customerno)
+								->where('fcust', 0)
 								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
 								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
 								->orderBy('id','DESC')
@@ -1696,6 +1759,7 @@ class ViewUsageAPI extends Controller
 					{
 						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
 								->where('customerno', $customerno)
+								->where('fcust', 0)
 								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
 								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
 								->orderBy('id','DESC')
@@ -1712,6 +1776,7 @@ class ViewUsageAPI extends Controller
 					{
 						$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
 								->where('customerno', $customerno)
+								->where('fcust', 0)
 								->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
 								->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'))
 								->orderBy('id','DESC')
@@ -2249,6 +2314,7 @@ class ViewUsageAPI extends Controller
 				return Excel::download(new RptLogAll($data), 'Log_DataWiz_API_ALL_'.$customerno.'_'.$periode.'.xlsx');
 			}
 
+			/*
 			if ($product == 1) //Validation API
 			{
 				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
@@ -2299,6 +2365,7 @@ class ViewUsageAPI extends Controller
 					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_Trial_Validation_No_'.$customerno.'_'.$periode.'.xlsx');
 				}
 			}
+			*/
 			
 			if ($product == 2) //Skiptrace API
 			{
@@ -3516,6 +3583,58 @@ class ViewUsageAPI extends Controller
 				}
 			}
 
+			if ($product == 21) //Optima Cellular Validation API
+			{
+				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
+				$billingtype= $sts->billingtypes;
+				//dd($billingtype);
+				
+				if ($billingtype === 1) //PREPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
+							->where('customerno', $customerno)
+							->where('fcust', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_Optima_Cellular_Validation_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 2) //POSTPAID
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
+							->where('customerno', $customerno)
+							->where('fcust', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+
+					ob_end_clean();
+
+					return Excel::download(new RptLogPostpaid21($data), 'Log_DataWiz_API_Optima_Cellular_Validation_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+				}
+				
+				if ($billingtype === 3) //TRIAL
+				{
+					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
+							->where('customerno', $customerno)
+							->where('fcust', 1)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
+							->orderBy('id','DESC')
+							->get();
+					//dd($data);
+					ob_end_clean();
+
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_Optima_Cellular_Validation_Trial_'.$customerno.'_'.$periode.'.xlsx');
+				}
+			}
+
 			if ($product == 22) //WA Validation API
 			{
 				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
@@ -3527,7 +3646,7 @@ class ViewUsageAPI extends Controller
 					$data = DB::connection('mysql_4')->table('api_whatsapp_validation_prepaid')
 							->where('customerno', $customerno)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), 'phone', 'tanggal')
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('is_registered AS status'))
 							->orderBy('id','DESC')
 							->get();
 
@@ -3541,7 +3660,7 @@ class ViewUsageAPI extends Controller
 					$data = DB::connection('mysql_4')->table('api_whatsapp_validation_postpaid')
 							->where('customerno', $customerno)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), 'phone', 'tanggal')
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('is_registered AS status'))
 							->orderBy('id','DESC')
 							->get();
 
@@ -3555,7 +3674,7 @@ class ViewUsageAPI extends Controller
 					$data = DB::connection('mysql_4')->table('api_whatsapp_validation_trial')
 							->where('customerno', $customerno)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), 'phone', 'tanggal')
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'), DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('is_registered AS status'))
 							->orderBy('id','DESC')
 							->get();
 					//dd($data);
@@ -3575,42 +3694,45 @@ class ViewUsageAPI extends Controller
 				{
 					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_prepaid')
 							->where('customerno', $customerno)
+							->where('fcust', 0)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
 							->orderBy('id','DESC')
 							->get();
 
 					ob_end_clean();
 
-					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
 				}
 				
 				if ($billingtype === 2) //POSTPAID
 				{
 					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_postpaid')
 							->where('customerno', $customerno)
+							->where('fcust', 0)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
 							->orderBy('id','DESC')
 							->get();
 
 					ob_end_clean();
 
-					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+					return Excel::download(new RptLogPostpaid21($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
 				}
 				
 				if ($billingtype === 3) //TRIAL
 				{
 					$data = DB::connection('mysql_4')->table('api_cellular_no_validation_pro_trial')
 							->where('customerno', $customerno)
+							->where('fcust', 0)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'))
+							->select('noapi_id', DB::raw('code AS status_hit'), DB::raw('phone_number AS data_input'),DB::raw('created_at AS tgl_hit'), DB::raw('phone_number AS phone'), DB::raw('level AS status'))
 							->orderBy('id','DESC')
 							->get();
 					//dd($data);
 					ob_end_clean();
 
-					return Excel::download(new RptLogTrial1($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Trial_'.$customerno.'_'.$periode.'.xlsx');
+					return Excel::download(new RptLogTrial21($data), 'Log_DataWiz_API_CellularNo_Validation_Pro_Trial_'.$customerno.'_'.$periode.'.xlsx');
 				}
 			}
 
@@ -3927,7 +4049,7 @@ class ViewUsageAPI extends Controller
 					return Excel::download(new RptLogTrial18($data), 'Log_DataWiz_API_Phone_Id_Match-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
 				}
 			}
-
+			
 			if ($product == 30) //Double Skiptrace V2 API
 			{
 				$sts		= DB::connection('mysql_4')->table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product)->first();
@@ -3946,7 +4068,7 @@ class ViewUsageAPI extends Controller
 
 					ob_end_clean();
 
-					return Excel::download(new RptLogTrial20($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
+					return Excel::download(new RptLogTrial8($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Prepaid_'.$customerno.'_'.$periode.'.xlsx');
 				}
 				
 				if ($billingtype === 2) //POSTPAID
@@ -3961,7 +4083,7 @@ class ViewUsageAPI extends Controller
 
 					ob_end_clean();
 
-					return Excel::download(new RptLogPostpaid20($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
+					return Excel::download(new RptLogPostpaid8($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Postpaid_'.$customerno.'_'.$periode.'.xlsx');
 				}
 				
 				if ($billingtype === 3) //TRIAL
@@ -3976,7 +4098,7 @@ class ViewUsageAPI extends Controller
 					//dd($data);
 					ob_end_clean();
 
-					return Excel::download(new RptLogTrial20($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
+					return Excel::download(new RptLogTrial8($data), 'Log_DataWiz_API_Double_Skiptrace-V2_Trial_'.$customerno.'_'.$periode.'.xlsx');
 				}
 			}
 		}
