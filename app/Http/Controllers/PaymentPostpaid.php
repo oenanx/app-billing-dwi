@@ -81,7 +81,7 @@ class PaymentPostpaid extends Controller
 						->select('master_company.customerno', 'master_company.company_name', DB::raw('UPPER(SALESAGENTNAME) AS SALESAGENTNAME'), DB::raw('DATE_FORMAT(activation_date,"%d-%m-%Y") AS activate_date'), DB::raw('(active) as factive'), DB::raw('(CASE WHEN active = 1 THEN "Active" WHEN active = 2 THEN "Trial" WHEN active = 0 THEN "Terminated" ELSE "Blocked" END) as active'), DB::raw('billingtypes AS billingtype'),DB::raw('(CASE WHEN billingtypes = 1 THEN "PREPAID" WHEN billingtypes = 2 THEN "POSTPAID" END) as tipebilling'))
 						->groupBy('master_company.customerno','master_company.company_name','SALESAGENTNAME','activate_date','factive','active','billingtypes','tipebilling')
 						->orderBy('master_company.customerno','DESC')
-						->paginate($request->query('perpage', 10))
+						->paginate($request->query('perpage', 10000))
 						->appends(request()->query());
 						//dd($data);
 

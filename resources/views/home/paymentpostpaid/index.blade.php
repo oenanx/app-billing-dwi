@@ -170,8 +170,8 @@ $(document).ready(function()
 					},
 				},
 			},
-			pageSize: 10,
-			serverPaging: true,
+			pageSize: 10000,
+			serverPaging: false,
 			serverFiltering: true,
 			serverSorting: false,
 		},
@@ -188,7 +188,7 @@ $(document).ready(function()
 
 		// column sorting
 		sortable: false,
-		pagination: true,
+		pagination: false,
 		search: {
 			input: $('#kt_datatable_search_query'),
 			key: 'generalSearch'

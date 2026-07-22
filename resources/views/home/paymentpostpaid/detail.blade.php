@@ -493,7 +493,7 @@ $(document).ready(function()
 			field: 'PERIOD',
 			sortable: false,
 			width: 80,
-			title: '<span style="font-size:11px;">Period</span>',
+			title: '<span style="font-size:11px;">Period Inv.</span>',
 			textAlign: 'center',
 			template: function(row) {
 				return '<span style="font-size:11px;">'+row.PERIOD+'</span>';
@@ -503,7 +503,7 @@ $(document).ready(function()
 			field: 'NOMINAL_TAGIHAN',
 			sortable: false,
 			width: 120,
-			title: '<span style="font-size:11px;">Billing Amount</span>',
+			title: '<span style="font-size:11px;">Billing Nominal</span>',
 			textAlign: 'right',
 			template: function(row) {
 				return '<span style="font-size:11px;">'+row.NOMINAL_TAGIHAN+'</span>';
@@ -513,7 +513,7 @@ $(document).ready(function()
 			field: 'Payment',
 			sortable: false,
 			width: 120,
-			title: '<span style="font-size:11px;">Payment Amount</span>',
+			title: '<span style="font-size:11px;">Payment Nominal</span>',
 			textAlign: 'right',
 			template: function(row) {
 				return '<span style="font-size:11px;">'+row.Payment+'</span>';
