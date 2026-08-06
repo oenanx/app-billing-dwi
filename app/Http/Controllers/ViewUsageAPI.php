@@ -158,7 +158,12 @@ class ViewUsageAPI extends Controller
 	{
         if(Session::get('userid'))
 		{
-			$custno 		= $id;
+			//dd($id);
+			$pieces = explode(";", $id);
+			$custno = $pieces[0];
+			$cname  = $pieces[1];
+
+			//$custno 		= $id;
             $data['thn']	= DB::select('SELECT DATE_FORMAT(CURDATE(), "%Y") AS TAHUN;');
 			
 			$produk 		= DB::connection('mysql_4')->table('datawhiz_app.master_product_api')
@@ -170,7 +175,7 @@ class ViewUsageAPI extends Controller
 								->get();
 			
 			//return response()->json($data);
-			return view('home.reports.ViewUsageAPI.viewusage', compact('custno','produk'))->with($data);
+			return view('home.reports.ViewUsageAPI.viewusage', compact('custno','produk','cname'))->with($data);
 		}
         else
         {
@@ -631,6 +636,35 @@ class ViewUsageAPI extends Controller
 				
 				if ($billingtype === 2) //POSTPAID
 				{
+					DB::connection('mysql_4')->select("CALL View_Usage_Customer_All_Monthly('".$customerno."', '".$periode."');");
+					
+					$cekjml = DB::connection('mysql_4')->table('tmp_view_usage') 
+								->where('customerno', $customerno)
+								->where('product', 'Phone History API')
+								->select(DB::raw('COUNT(id) AS tot_data'))
+								->groupBy('product')
+								->first();
+						
+					// Proteksi jika data tidak ditemukan agar tidak memicu error Object Null
+					$jmldata = $cekjml ? $cekjml->tot_data : 0;
+					
+					//dd($jmldata);
+								
+					if($jmldata > 50000) 
+					{
+						ob_end_clean(); // Bersihkan buffer output sebelum kirim JSON
+						return response()->json([
+							'meta' => [
+								'page' => 1,
+								'pages' => 0,
+								'perpage' => 0,
+								'total' => 0,
+								'data_too_large' => true, 
+							],
+							'data' => [],
+						]);
+					}
+
 					if ($request->ajax()) 
 					{
 						$first = DB::connection('mysql_4')->table('api_phonehistory_08_postpaid')
@@ -664,15 +698,45 @@ class ViewUsageAPI extends Controller
 								->groupBy('noapi_id')
 								->unionAll($third)
 								->orderBy('tgl_hit','DESC')
-								->paginate($request->query('perpage', 100000000))
+								->paginate($request->query('perpage', 50000))
 								->appends(request()->query());
 						
+						ob_end_clean();
 						return response()->paginator($data);
-					}
+					}						
 				}
 				
 				if ($billingtype === 3) //TRIAL
 				{
+					DB::connection('mysql_4')->select("CALL View_Usage_Customer_All_Monthly('".$customerno."', '".$periode."');");
+					
+					$cekjml = DB::connection('mysql_4')->table('tmp_view_usage') 
+								->where('customerno', $customerno)
+								->where('product', 'Phone History API')
+								->select(DB::raw('COUNT(id) AS tot_data'))
+								->groupBy('product')
+								->first();
+						
+					// Proteksi jika data tidak ditemukan agar tidak memicu error Object Null
+					$jmldata = $cekjml ? $cekjml->tot_data : 0;
+					
+					//dd($jmldata);
+								
+					if($jmldata > 50000) 
+					{
+						ob_end_clean(); // Bersihkan buffer output sebelum kirim JSON
+						return response()->json([
+							'meta' => [
+								'page' => 1,
+								'pages' => 0,
+								'perpage' => 0,
+								'total' => 0,
+								'data_too_large' => true, 
+							],
+							'data' => [],
+						]);
+					}
+
 					if ($request->ajax()) 
 					{
 						$first = DB::connection('mysql_4')->table('api_phonehistory_08_trial')
@@ -706,9 +770,10 @@ class ViewUsageAPI extends Controller
 								->groupBy('noapi_id')
 								->unionAll($third)
 								->orderBy('tgl_hit','DESC')
-								->paginate($request->query('perpage', 100000000))
+								->paginate($request->query('perpage', 100))
 								->appends(request()->query());
 						
+						ob_end_clean();
 						return response()->paginator($data);
 					}
 				}
@@ -1165,6 +1230,35 @@ class ViewUsageAPI extends Controller
 				
 				if ($billingtype === 2) //POSTPAID
 				{
+					DB::connection('mysql_4')->select("CALL View_Usage_Customer_All_Monthly('".$customerno."', '".$periode."');");
+					
+					$cekjml = DB::connection('mysql_4')->table('tmp_view_usage') 
+								->where('customerno', $customerno)
+								->where('product', 'Phone History 365 API')
+								->select(DB::raw('COUNT(id) AS tot_data'))
+								->groupBy('product')
+								->first();
+						
+					// Proteksi jika data tidak ditemukan agar tidak memicu error Object Null
+					$jmldata = $cekjml ? $cekjml->tot_data : 0;
+					
+					//dd($jmldata);
+								
+					if($jmldata > 50000) 
+					{
+						ob_end_clean(); // Bersihkan buffer output sebelum kirim JSON
+						return response()->json([
+							'meta' => [
+								'page' => 1,
+								'pages' => 0,
+								'perpage' => 0,
+								'total' => 0,
+								'data_too_large' => true, 
+							],
+							'data' => [],
+						]);
+					}
+
 					if ($request->ajax()) 
 					{
 						$first = DB::connection('mysql_4')->table('api_phonehistory_08_postpaid')
@@ -1198,7 +1292,7 @@ class ViewUsageAPI extends Controller
 								->groupBy('noapi_id')
 								->unionAll($third)
 								->orderBy('tgl_hit','DESC')
-								->paginate($request->query('perpage', 100000000))
+								->paginate($request->query('perpage', 100))
 								->appends(request()->query());
 						
 						return response()->paginator($data);
@@ -1207,6 +1301,35 @@ class ViewUsageAPI extends Controller
 				
 				if ($billingtype === 3) //TRIAL
 				{
+					DB::connection('mysql_4')->select("CALL View_Usage_Customer_All_Monthly('".$customerno."', '".$periode."');");
+					
+					$cekjml = DB::connection('mysql_4')->table('tmp_view_usage') 
+								->where('customerno', $customerno)
+								->where('product', 'Phone History 365 API')
+								->select(DB::raw('COUNT(id) AS tot_data'))
+								->groupBy('product')
+								->first();
+						
+					// Proteksi jika data tidak ditemukan agar tidak memicu error Object Null
+					$jmldata = $cekjml ? $cekjml->tot_data : 0;
+					
+					//dd($jmldata);
+								
+					if($jmldata > 50000) 
+					{
+						ob_end_clean(); // Bersihkan buffer output sebelum kirim JSON
+						return response()->json([
+							'meta' => [
+								'page' => 1,
+								'pages' => 0,
+								'perpage' => 0,
+								'total' => 0,
+								'data_too_large' => true, 
+							],
+							'data' => [],
+						]);
+					}
+
 					if ($request->ajax()) 
 					{
 						$first = DB::connection('mysql_4')->table('api_phonehistory_08_trial')
@@ -1240,7 +1363,7 @@ class ViewUsageAPI extends Controller
 								->groupBy('noapi_id')
 								->unionAll($third)
 								->orderBy('tgl_hit','DESC')
-								->paginate($request->query('perpage', 100000000))
+								->paginate($request->query('perpage', 100))
 								->appends(request()->query());
 						
 						return response()->paginator($data);
@@ -1474,6 +1597,35 @@ class ViewUsageAPI extends Controller
 				
 				if ($billingtype === 2) //POSTPAID
 				{
+					DB::connection('mysql_4')->select("CALL View_Usage_Customer_All_Monthly('".$customerno."', '".$periode."');");
+					
+					$cekjml = DB::connection('mysql_4')->table('tmp_view_usage') 
+								->where('customerno', $customerno)
+								->where('product', 'Phone History 365 Date API')
+								->select(DB::raw('COUNT(id) AS tot_data'))
+								->groupBy('product')
+								->first();
+						
+					// Proteksi jika data tidak ditemukan agar tidak memicu error Object Null
+					$jmldata = $cekjml ? $cekjml->tot_data : 0;
+					
+					//dd($jmldata);
+								
+					if($jmldata > 50000) 
+					{
+						ob_end_clean(); // Bersihkan buffer output sebelum kirim JSON
+						return response()->json([
+							'meta' => [
+								'page' => 1,
+								'pages' => 0,
+								'perpage' => 0,
+								'total' => 0,
+								'data_too_large' => true, 
+							],
+							'data' => [],
+						]);
+					}
+
 					if ($request->ajax()) 
 					{
 						$first = DB::connection('mysql_4')->table('api_phonehistory_08_postpaid')
@@ -1507,7 +1659,7 @@ class ViewUsageAPI extends Controller
 								->groupBy('noapi_id')
 								->unionAll($third)
 								->orderBy('tgl_hit','DESC')
-								->paginate($request->query('perpage', 100000000))
+								->paginate($request->query('perpage', 100))
 								->appends(request()->query());
 						
 						return response()->paginator($data);
@@ -1516,6 +1668,35 @@ class ViewUsageAPI extends Controller
 				
 				if ($billingtype === 3) //TRIAL
 				{
+					DB::connection('mysql_4')->select("CALL View_Usage_Customer_All_Monthly('".$customerno."', '".$periode."');");
+					
+					$cekjml = DB::connection('mysql_4')->table('tmp_view_usage') 
+								->where('customerno', $customerno)
+								->where('product', 'Phone History 365 Date API')
+								->select(DB::raw('COUNT(id) AS tot_data'))
+								->groupBy('product')
+								->first();
+						
+					// Proteksi jika data tidak ditemukan agar tidak memicu error Object Null
+					$jmldata = $cekjml ? $cekjml->tot_data : 0;
+					
+					//dd($jmldata);
+								
+					if($jmldata > 50000) 
+					{
+						ob_end_clean(); // Bersihkan buffer output sebelum kirim JSON
+						return response()->json([
+							'meta' => [
+								'page' => 1,
+								'pages' => 0,
+								'perpage' => 0,
+								'total' => 0,
+								'data_too_large' => true, 
+							],
+							'data' => [],
+						]);
+					}
+
 					if ($request->ajax()) 
 					{
 						$first = DB::connection('mysql_4')->table('api_phonehistory_08_trial')
@@ -1549,7 +1730,7 @@ class ViewUsageAPI extends Controller
 								->groupBy('noapi_id')
 								->unionAll($third)
 								->orderBy('tgl_hit','DESC')
-								->paginate($request->query('perpage', 100000000))
+								->paginate($request->query('perpage', 100))
 								->appends(request()->query());
 						
 						return response()->paginator($data);

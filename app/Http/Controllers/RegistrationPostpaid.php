@@ -21,6 +21,10 @@ use App\Exports\RptLogPostpaid7;
 use App\Exports\RptLogPostpaid8;
 use App\Exports\RptLogPostpaid9;
 use App\Exports\RptLogPostpaid10;
+use App\Exports\RptLogPostpaid11;
+use App\Exports\RptLogPostpaid12;
+use App\Exports\RptLogPostpaid13;
+use App\Exports\RptLogPostpaid14;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -518,11 +522,12 @@ class RegistrationPostpaid extends Controller
         {
 			$data = DB::table('master_company')
 					->where('master_company.customerno', $id)
-					->where('master_company.billingtype', 2)
+					->where('master_product_api_customer.billingtypes', 2)
 					->where('master_company.fapi', 1)
 					->join('salesagent', 'salesagent.SALESAGENTCODE', '=', 'master_company.SALESAGENTCODE')	
 					->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
-						->join('master_product_api', 'master_product_api.id', '=', 'master_product_api_customer.product_api_id') 
+					->join('master_product_api', 'master_product_api.id', '=', 'master_product_api_customer.product_api_id') 
+					->join('master_rates_api_customer', 'master_rates_api_customer.customerno', '=', 'master_company.customerno')
 					->select('master_company.id','master_company.customerno','company_name','address','address2','address3','address4','address5','zipcode','address_npwp','phone_fax','email_pic','email_billing','npwpno','npwpname','master_company.SALESAGENTCODE','SALESAGENTNAME','activation_date','notes',DB::raw('(master_company.active) as factive'),DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" ELSE "Inactive" END) as active'),'master_product_api_customer.product_api_id','master_product_api.product','invtypeid',DB::raw('CASE WHEN invtypeid = 2 THEN "Invoice Monthly" ELSE "Invoice Periodic" END AS invtype'))
 					->first();
 
@@ -574,6 +579,7 @@ class RegistrationPostpaid extends Controller
 					->where('master_company.fapi', 1)
 					->join('master_product_api', 'master_product_api.id', '=', 'master_product_api_customer.product_api_id')
 					->join('master_company', 'master_company.customerno', '=', 'master_product_api_customer.customerno')
+					->join('master_rates_api_customer', 'master_rates_api_customer.customerno', '=', 'master_company.customerno')
 					->select('master_company.id','master_product_api_customer.customerno','company_name',DB::raw('CASE WHEN billingtype = 1 THEN "Prepaid" ELSE "PostPaid" END AS billingtype'),DB::raw('MAX( case when product_api_id = "1" THEN 1 END) AS pid1'),DB::raw('MAX( case when product_api_id = "2" THEN 2 END) AS pid2'),DB::raw('MAX( case when product_api_id = "3" THEN 3 END) AS pid3'),DB::raw('MAX( case when product_api_id = "1" THEN "Validation API" END) AS product1'),DB::raw('MAX( case when product_api_id = "2" THEN "Skiptrace API" END) AS product2'),DB::raw('MAX( case when product_api_id = "3" THEN "Id. Match API" END) AS product3'),DB::raw('MAX( case when product_api_id = "1" THEN rates ELSE 0 END) AS rates1'),DB::raw('MAX( case when product_api_id = "2" THEN rates ELSE 0 END) AS rates2'),DB::raw('MAX( case when product_api_id = "3" THEN rates ELSE 0 END) AS rates3'),'master_company.active')
 					->groupBy('master_company.id','master_product_api_customer.customerno','company_name','billingtype','active')
 					->first();
@@ -915,7 +921,12 @@ class RegistrationPostpaid extends Controller
 	{
         if(Session::get('userid'))
 		{
-			$custno 		= $id;
+			//dd($id);
+			$pieces = explode(";", $id);
+			$custno = $pieces[0];
+			$cname  = $pieces[1];
+
+			//$custno 		= $id;
             $data['thn']	= DB::select('SELECT DATE_FORMAT(CURDATE(), "%Y") AS TAHUN;');
 			
 			$produk 		= DB::connection('mysql_4')->table('datawhiz_app.master_product_api')
@@ -927,7 +938,7 @@ class RegistrationPostpaid extends Controller
 								->get();
 			
 			//return response()->json($data);
-			return view('home.master_postpaid.viewusage', compact('custno','produk'))->with($data);
+			return view('home.master_postpaid.viewusage', compact('custno','produk','cname'))->with($data);
 		}
         else
         {
@@ -1078,13 +1089,34 @@ class RegistrationPostpaid extends Controller
 			{
 				if ($request->ajax()) 
 				{
-					$data = QueryBuilder::for(PhoneHistory_Api_Postpaid::class)
+					$first = DB::connection('mysql_4')->table('api_phonehistory_08_postpaid')
 							->where('customerno', $customerno)
 							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
-							->select('noapi_id',DB::raw('code AS status_hit'),DB::raw('(CASE WHEN phone_no = "" THEN phone_md5 ELSE phone_no END) AS data_input'),DB::raw('created_at AS tgl_hit'))
-							->groupBy('noapi_id', 'status_hit', 'data_input', 'tgl_hit')
-							->orderBy('id','DESC')
-							->paginate($request->query('perpage', 1000000))
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phone_no_08) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id');
+					 
+					$secnd = DB::connection('mysql_4')->table('api_phonehistory_62_postpaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phone_no_62) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->unionAll($first);
+					 
+					$third = DB::connection('mysql_4')->table('api_phonehistory_md5_08_postpaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phone_md5_08) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->unionAll($secnd);
+					 
+					$data  = DB::connection('mysql_4')->table('api_phonehistory_md5_62_postpaid')
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id',DB::raw('MAX(code) AS status_hit'),DB::raw('MAX(phone_md5_62) AS data_input'),DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->unionAll($third)
+							->orderBy('tgl_hit','DESC')
+							->paginate($request->query('perpage', 100000000))
 							->appends(request()->query());
 
 					return response()->paginator($data);
@@ -1137,6 +1169,74 @@ class RegistrationPostpaid extends Controller
 							->groupBy('noapi_id', 'status_hit', 'data_input', 'tgl_hit')
 							->orderBy('id','DESC')
 							->paginate($request->query('perpage', 1000000))
+							->appends(request()->query());
+
+					return response()->paginator($data);
+				}
+			}
+
+			if ($product == 11) //Address Verification API
+			{
+				if ($request->ajax()) 
+				{
+					$data = QueryBuilder::for(Address_Verification_Api_Postpaid::class)
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(nik) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->paginate($request->query('perpage', 10000000))
+							->appends(request()->query());
+
+					return response()->paginator($data);
+				}
+			}
+			
+			if ($product == 12) //Negative Record API
+			{
+				if ($request->ajax()) 
+				{
+					$data = QueryBuilder::for(Negative_Record_Api_Postpaid::class)
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(nama) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->paginate($request->query('perpage', 10000000))
+							->appends(request()->query());
+
+					return response()->paginator($data);
+				}
+			}
+			
+			if ($product == 13) //Home Address API
+			{
+				if ($request->ajax()) 
+				{
+					$data = QueryBuilder::for(Home_Address_Api_Postpaid::class)
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->paginate($request->query('perpage', 10000000))
+							->appends(request()->query());
+
+					return response()->paginator($data);
+				}
+			}
+			
+			if ($product == 14) //Office Address API
+			{
+				if ($request->ajax()) 
+				{
+					$data = QueryBuilder::for(Office_Address_Api_Postpaid::class)
+							->where('customerno', $customerno)
+							->where(DB::raw('DATE_FORMAT(created_at,"%Y%m")'), $periode)
+							->select('noapi_id', DB::raw('MAX(code) AS status_hit'), DB::raw('MAX(phoneno) AS data_input'), DB::raw('MAX(created_at) AS tgl_hit'))
+							->groupBy('noapi_id')
+							->orderBy('id','DESC')
+							->paginate($request->query('perpage', 10000000))
 							->appends(request()->query());
 
 					return response()->paginator($data);

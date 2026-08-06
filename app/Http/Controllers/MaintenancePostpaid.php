@@ -156,25 +156,25 @@ class MaintenancePostpaid extends Controller
  				$sum_invalid	= $row1->sum_invalid;
 				$get_date		= $row1->get_date;
 				
-				$rate 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->select('rates')->first();
-				$rates 			= $rate->rates;
-				$totalamount	= ($rates * $sum_success);
+				// $rate 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->select('rates')->first();
+				// $rates 			= $rate->rates;
+				// $totalamount	= ($rates * $sum_success);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates1 * $sum_success);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 1)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_success); 
+				}
 
 				DB::table('sum_validno_postpaid')->insert(
 					[
@@ -200,25 +200,25 @@ class MaintenancePostpaid extends Controller
 				$sum_nik		= $row2->sum_nik;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_nik);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->select('rates')->first();
+				// $rates 		= $rate2->rates;
+				// $totalamount	= ($rates * $sum_nik);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates1 * $sum_nik);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 2)->where('billcycleid', 2)->where('range_from', '<=', $sum_nik)->where('range_to', '>=', $sum_nik)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_nik); 
+				}
 
 				DB::table('sum_skiptrace_postpaid')->insert(
 					[
@@ -226,8 +226,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_nik,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -242,25 +242,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 3)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_idmatch_postpaid')->insert(
 					[
@@ -268,8 +268,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -284,25 +284,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 4)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_reverse_postpaid')->insert(
 					[
@@ -310,8 +310,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -326,25 +326,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 5)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_demography_postpaid')->insert(
 					[
@@ -352,8 +352,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -368,25 +368,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 6)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_income_postpaid')->insert(
 					[
@@ -394,8 +394,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -411,25 +411,25 @@ class MaintenancePostpaid extends Controller
 				$get_date		= $row2->get_date;
 				$product_api_id	= $row2->product_api_id;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 7)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 7)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 7)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 7)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phonehistory_postpaid')->insert(
 					[
@@ -437,8 +437,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -453,25 +453,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 8)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_sliksummary_postpaid')->insert(
 					[
@@ -479,8 +479,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -495,25 +495,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 9)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_idverification_postpaid')->insert(
 					[
@@ -521,8 +521,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -537,25 +537,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 10)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_demography_photo_postpaid')->insert(
 					[
@@ -563,8 +563,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -579,25 +579,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates		= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 11)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_address_verification_postpaid')->insert(
 					[
@@ -605,8 +605,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -621,25 +621,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 12)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_negatif_postpaid')->insert(
 					[
@@ -647,8 +647,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -663,25 +663,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 13)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_home_address_postpaid')->insert(
 					[
@@ -689,8 +689,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -705,25 +705,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 14)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_office_address_postpaid')->insert(
 					[
@@ -731,8 +731,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -748,25 +748,25 @@ class MaintenancePostpaid extends Controller
 				$get_date		= $row2->get_date;
 				$product_api_id	= $row2->product_api_id;
 
-				$rate2			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();									
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();									
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 15)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 15)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 15)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 15)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phonehistory_365_postpaid')->insert(
 					[
@@ -774,8 +774,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -790,25 +790,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 16)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_slikdetail_postpaid')->insert(
 					[
@@ -816,8 +816,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -832,25 +832,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 17)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phone_age_postpaid')->insert(
 					[
@@ -858,8 +858,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -874,25 +874,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 18)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phone_id_match_postpaid')->insert(
 					[
@@ -900,8 +900,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -917,26 +917,25 @@ class MaintenancePostpaid extends Controller
 				$get_date		= $row2->get_date;
 				$product_api_id	= $row2->product_api_id;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();
-									
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', $product_api_id)->select('rates')->first();									
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 19)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 19)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 19)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 19)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phonehistory_365_dates_postpaid')->insert(
 					[
@@ -944,8 +943,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_noapi_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -960,25 +959,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 20)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_double_postpaid')->insert(
 					[
@@ -986,8 +985,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1002,25 +1001,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 21)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_optima_validno_pro_postpaid')->insert(
 					[
@@ -1028,8 +1027,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1044,25 +1043,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 22)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_wa_validation_postpaid')->insert(
 					[
@@ -1070,8 +1069,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1086,25 +1085,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 23)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_validno_pro_postpaid')->insert(
 					[
@@ -1112,8 +1111,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1128,25 +1127,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 24)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_true_phoneid_postpaid')->insert(
 					[
@@ -1154,8 +1153,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1170,25 +1169,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 25)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_fraud_check_postpaid')->insert(
 					[
@@ -1196,8 +1195,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1214,25 +1213,25 @@ class MaintenancePostpaid extends Controller
 				$sum_nik		= $row2->sum_nik;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_nik);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_nik);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_nik);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 26)->where('billcycleid', 2)->where('range_from', '<=', $sum_nik)->where('range_to', '>=', $sum_nik)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_nik); 
+				}
 
 				DB::table('sum_skiptrace_v2_postpaid')->insert(
 					[
@@ -1240,8 +1239,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_nik'		=> $sum_nik,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1256,25 +1255,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 27)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_reverse_v2_postpaid')->insert(
 					[
@@ -1282,8 +1281,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1298,25 +1297,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 28)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phone_age_v2_postpaid')->insert(
 					[
@@ -1324,8 +1323,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1340,25 +1339,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 29)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_phone_id_match_v2_postpaid')->insert(
 					[
@@ -1366,8 +1365,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1382,25 +1381,25 @@ class MaintenancePostpaid extends Controller
 				$sum_noapi_id	= $row2->sum_noapi_id;
 				$get_date		= $row2->get_date;
 
-				$rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->select('rates')->first();
-				$rates2 		= $rate2->rates;
-				$totalamount2	= ($rates2 * $sum_noapi_id);
+				// $rate2 			= DB::table('master_product_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->select('rates')->first();
+				// $rates2 		= $rate2->rates;
+				// $totalamount	= ($rates2 * $sum_noapi_id);
 
 				//Per Hits
-				//$rate1 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->where('billcycleid', 1)->select('rates')->first(); 
-				//if (isset($rate1) || !is_null($rate1))
-				//{
-					//$rates		= $rate1->rates;
-					//$totalamount	= ($rates1 * $sum_success);		
-				//}
+				$rate1 				= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->where('billcycleid', 1)->select('rates')->first(); 
+				if (isset($rate1) || !is_null($rate1))
+				{
+					$rates			= $rate1->rates;
+					$totalamount	= ($rates * $sum_noapi_id);		
+				}
 				
 				//Tiering
-				//$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->where('billcycleid', 2)->where('range_from', '<=', $sum_success)->where('range_to', '>=', $sum_success)->select('rates')->first(); 
-				//if (isset($rate2) || !is_null($rate2))
-				//{
-				//	$rates			= $rate2->rates;
-				//	$totalamount	= ($rates * $sum_success); 
-				//}
+				$rate2 			= DB::table('master_rates_api_customer')->where('customerno', $customerno)->where('product_api_id', 30)->where('billcycleid', 2)->where('range_from', '<=', $sum_noapi_id)->where('range_to', '>=', $sum_noapi_id)->select('rates')->first(); 
+				if (isset($rate2) || !is_null($rate2))
+				{
+					$rates			= $rate2->rates;
+					$totalamount	= ($rates * $sum_noapi_id); 
+				}
 
 				DB::table('sum_double_v2_postpaid')->insert(
 					[
@@ -1408,8 +1407,8 @@ class MaintenancePostpaid extends Controller
 						'customerno'	=> $customerno,
 						'sum_api_id'	=> $sum_noapi_id,
 						'get_date'		=> $get_date,
-						'rates'			=> $rates2,
-						'totalamount'	=> $totalamount2
+						'rates'			=> $rates,
+						'totalamount'	=> $totalamount
 					]
 				);
 			}
@@ -1448,7 +1447,13 @@ class MaintenancePostpaid extends Controller
             $time = explode(' ', $time);
             $time = $time[1] + $time[0];
             $finish = $time;
-            $total_time = round(($finish - $start), 3);
+            //$total_time = round(($finish - $start), 3);
+			
+			$init = ($finish - $start);
+			$hours = floor($init / 3600);
+			$minutes = floor(($init / 60) % 60);
+			$seconds = $init % 60;
+			$total_time = $hours." jam : ".$minutes." menit : ".$seconds." detik";
 
 			return response()->json(['success' => $total_time]);
 		}		
@@ -1550,7 +1555,7 @@ class MaintenancePostpaid extends Controller
             $delbsdetail = DB::table('bs_postpaid_detail')->where('period',$period)->delete();
             //dd($delbsdetail);
 
-            $duedate = substr($period,0,4).'-'.substr($period,4,2).'-20';
+            $duedate = substr($period,0,4).'-'.substr($period,4,2).'-25';
             $newstatementdate = date('Y-m-d', strtotime($period5tgl));
 			//Baris command di bawah ini di-non-aktifkan per 1 Juli 2024.
             //$newstatementdate = date('Y-m-d', strtotime("last day", strtotime($period5tgl)));
@@ -2716,7 +2721,7 @@ class MaintenancePostpaid extends Controller
 				
 				//insert into table trans_postpaid
 				//Jika data tagihan periode maintenance all terpilih sudah ada di table trans_postpaid maka tidak di insert-kan.
-				$cekpay	= DB::table('trans_postpaid')->where('PERIOD', $period)->select(DB::raw('COUNT(PERIOD) AS total'))->first();
+				$cekpay	= DB::table('trans_postpaid')->where('PERIOD', $period)->where('CUSTOMERNO', $cust_no)->select(DB::raw('COUNT(PERIOD) AS total'))->first();
 				$totalc = $cekpay->total;
 
 				$data18 = DB::table('bs_postpaid')->where('PERIOD', $period)->where('CUSTOMERNO', $cust_no)
@@ -2725,24 +2730,28 @@ class MaintenancePostpaid extends Controller
 						
 				$TOTALAMOUNT = $data18->TOTALAMOUNT;
 				$TOTALVAT	 = $data18->TOTALVAT;
+				$TOTALTAGIH	 = ($TOTALAMOUNT + $TOTALVAT);
 				
-				if ($totalc == 0)
+				if ($TOTALTAGIH > 0)
 				{
-					//insert into table trans_postpaid
-					DB::table('trans_postpaid')->insert(
-						[
-							'TRANSACTIONDATE' => date('Y-m-01 H:i:s'),
-							'CUSTOMERNO' => $cust_no,
-							'AMOUNT' => 0,
-							'CRT_USER' => $userid,
-							'CRT_DATE' => date('Y-m-d H:i:s'),
-							'SETTLEMENT_STATUS' => 0,
-							'BSNO' => $bsno1,
-							'DUEDATE' => $duedate,
-							'NOMINAL_TAGIHAN' => ($TOTALAMOUNT + $TOTALVAT),
-							'PERIOD' => $period
-						]
-					);
+					if ($totalc == 0)
+					{
+						//insert into table trans_postpaid
+						DB::table('trans_postpaid')->insert(
+							[
+								'TRANSACTIONDATE' => date('Y-m-01 H:i:s'),
+								'CUSTOMERNO' => $cust_no,
+								'AMOUNT' => 0,
+								'CRT_USER' => $userid,
+								'CRT_DATE' => date('Y-m-d H:i:s'),
+								'SETTLEMENT_STATUS' => 0,
+								'BSNO' => $bsno1,
+								'DUEDATE' => $duedate,
+								'NOMINAL_TAGIHAN' => $TOTALTAGIH,
+								'PERIOD' => $period
+							]
+						);
+					}
 				}
 
                 $j++;
@@ -2780,7 +2789,13 @@ class MaintenancePostpaid extends Controller
             $time = explode(' ', $time);
             $time = $time[1] + $time[0];
             $finish = $time;
-            $total_time = round(($finish - $start), 3);
+            //$total_time = round(($finish - $start), 3);
+			
+			$init = ($finish - $start);
+			$hours = floor($init / 3600);
+			$minutes = floor(($init / 60) % 60);
+			$seconds = $init % 60;
+			$total_time = $hours." jam : ".$minutes." menit : ".$seconds;
 
 			return response()->json(['success' => $total_time]);
         }

@@ -42,7 +42,7 @@
                 </li>
 				<hr class="style1" />
 
-				@if ((Session::get('departemen') == "MIS"))
+				@if ((Session::get('departemen') == "MIS") || (Session::get('departemen') == "BILLING"))
                 <li class="menu-section">
                     <h4 class="menu-text">Forms</h4>
                     <i class="menu-icon ki ki-bold-more-hor icon-md"></i>

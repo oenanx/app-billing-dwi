@@ -67,7 +67,7 @@ class PDFInvPostpaid extends Controller
 				$phone1             = $customer->phone_fax;
 				//dd($phone1);
                 $period = $bs_period;
-                $report_date = "25/12/2021";
+                $report_date = date('d/m/Y'); //"25/12/2021";
                 
                 $bs = M_BSPostpaid::query()
                         ->select('*', DB::raw('(PREVIOUSBALANCE-PREVIOUSPAYMENT-BALANCEADJUSTMENT+TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as AMOUNTDUE'), DB::raw('(TOTALAMOUNT-TOTALDISCOUNT+TOTALVAT-USAGEADJUSTMENT-PENALTY) as CHARGE'), DB::raw('(TOTALAMOUNT+USAGEADJUSTMENT+TOTALDISCOUNT) as BEFOREVAT'))
@@ -365,7 +365,7 @@ class PDFInvPostpaid extends Controller
         $this->fpdf->SetFont('times','B',10);
         $this->fpdf->Cell(130);
         $this->fpdf->Cell(30,7,'Due Date',1,0,'C',1);
-        $this->fpdf->Cell(35,7,"20 ".strftime('%B %Y',strtotime($duedate)),1,0,'C',0);
+        $this->fpdf->Cell(35,7,"25 ".strftime('%B %Y',strtotime($duedate)),1,0,'C',0);
         $this->fpdf->Cell(130);
         $this->fpdf->Ln(7);
 

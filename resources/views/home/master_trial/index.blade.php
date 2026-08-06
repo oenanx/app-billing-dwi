@@ -305,8 +305,8 @@ $(document).ready(function()
 					},
 				},
 			},
-			pageSize: 10,
-			serverPaging: true,
+			//pageSize: 10,
+			serverPaging: false,
 			serverFiltering: true,
 			serverSorting: true,
 		},
@@ -330,7 +330,7 @@ $(document).ready(function()
 
 		// column sorting
 		//sortable: false,
-		pagination: true,
+		pagination: false,
 		search: {
 			input: $('#kt_datatable_search_query'),
 			key: 'generalSearch'
@@ -378,19 +378,19 @@ $(document).ready(function()
 		//	}
 		//},
 		{
-			field: 'active',
+			field: 'factive',
 			sortable: false,
 			width: 80,
             textAlign: 'center',
 			title: '<p style="font-size:12px; text-align:center;">Status</p>',
             template: function(row) {
-                var datas = row.active;
+                var datas = row.factive;
 
-                if (datas == "Trial")
+                if (row.factive == "1" || row.factive == "2")
                 {
-                    return '<p style="font-size:12px; background-color: lightgreen;">Trial</p>';
+                    return '<p style="font-size:12px; background-color: lightgreen;">Actived</p>';
                 }
-                else if (datas == "Terminated")
+                else if (row.factive == "3")
                 {
                     return '<p style="font-size:12px; background-color: #F2795E;">Terminated</p>';
                 }

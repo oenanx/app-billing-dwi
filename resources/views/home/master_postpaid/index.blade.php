@@ -227,6 +227,7 @@
 						<tr>
 							<th><center>Customer Name</center></th>
 							<th><center>Product Name</center></th>
+							<th><center>Billing Cycle</center></th>
 							<th><center>Rates</center></th>
 						</tr>
 					</thead>
@@ -292,8 +293,8 @@ $(document).ready(function()
 					},
 				},
 			},
-			pageSize: 10,
-			serverPaging: true,
+			//pageSize: 10,
+			serverPaging: false,
 			serverFiltering: true,
 			serverSorting: true,
 		},
@@ -317,7 +318,7 @@ $(document).ready(function()
 
 		// column sorting
 		//sortable: false,
-		pagination: true,
+		pagination: false,
 		search: {
 			input: $('#kt_datatable_search_query'),
 			key: 'generalSearch'
@@ -407,15 +408,8 @@ $(document).ready(function()
 							<li style="font-size:9pt;>\
 								<a href="javascript:void(0)" class="dropdown-item viewRates" data-id="'+row.customerno+'" title="View Product Rates">\
 									<span class="svg-icon svg-icon-primary svg-icon-2x">\
-										<i class="flaticon-eye icon-md"></i>\
+										<i class="flaticon-coins icon-md"></i>\
 									</span>&nbsp;View Product Rates\
-								</a>\
-							</li>\
-							<li style="font-size:9pt;>\
-								<a href="javascript:void(0)" class="dropdown-item viewUsage" data-id="'+row.customerno+'" title="View Usages">\
-									<span class="svg-icon svg-icon-primary svg-icon-2x">\
-										<i class="flaticon-eye icon-md"></i>&nbsp;&nbsp;&nbsp;View Usages\
-									</span>\
 								</a>\
 							</li>\
 						</ul>\
@@ -493,6 +487,7 @@ $('body').on('click', '.viewRates', function ()
         columns: [
             {data: 'company_name', className: 'text-left', name: 'company_name'},
             {data: 'product', className: 'text-center', name: 'product'},
+            {data: 'billcycle', className: 'text-center', name: 'billcycle'},
             {data: 'rates', className: 'text-right', name: 'rates'},
         ],
         order: [[ 1, "asc" ]],

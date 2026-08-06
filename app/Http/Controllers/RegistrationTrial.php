@@ -527,7 +527,8 @@ class RegistrationTrial extends Controller
 			$data = DB::table('master_company')
 					->where('master_company.fapi', 1)
 					->where('master_company.customerno', $id)
-					->where('master_company.billingtype', 1)
+					->where('master_product_api_customer.billingtypes', 3)
+					->join('master_product_api_customer', 'master_product_api_customer.customerno', '=', 'master_company.customerno')
 					->join('salesagent', 'salesagent.SALESAGENTCODE', '=', 'master_company.SALESAGENTCODE')	
 					->select('master_company.id','master_company.customerno','company_name','address','address2','address3','address4','address5','zipcode','address_npwp','phone_fax','email_pic','email_billing','npwpno','npwpname','master_company.SALESAGENTCODE','SALESAGENTNAME','activation_date','notes','invtypeid',DB::raw('(CASE WHEN master_company.invtypeid = 1 THEN "Periodic" WHEN master_company.invtypeid = 2 THEN "Monthly" END) as invtype'),DB::raw('(master_company.active) as factive'), DB::raw('(CASE WHEN master_company.active = 1 THEN "Active" WHEN master_company.active = 2 THEN "Trial" ELSE "Inactive" END) as active'), DB::raw('(CASE WHEN master_company.fcompleted = 1 THEN "Completed" ELSE "Not Complete" END) as fcomplete'))
 					->first();
@@ -939,6 +940,7 @@ class RegistrationTrial extends Controller
     {
         if(Session::get('userid'))
         {
+			//dd($id);
 			/*
 			$sales  = DB::table('salesagent')
 						->where('STATUS', 1)
@@ -996,7 +998,7 @@ class RegistrationTrial extends Controller
 				$data = DB::table('master_product_api_customer')
 						->where('master_company.fapi', 1)
 						->where('master_company.customerno', $id)
-						->where('master_company.billingtype', 1)
+						//->where('master_product_api_customer.billingtypes', 3)
 						->join('master_company', 'master_company.customerno', '=', 'master_product_api_customer.customerno')	
 						->join('master_product_api', 'master_product_api.id', '=', 'master_product_api_customer.product_api_id')	
 						->select('master_product_api_customer.product_api_id','master_product_api.product','master_product_api_customer.rates','master_product_api_customer.quota','master_product_api_customer.remainquota','master_product_api_customer.start_trial','master_product_api_customer.end_trial')

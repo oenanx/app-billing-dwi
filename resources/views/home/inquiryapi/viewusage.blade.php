@@ -61,7 +61,7 @@
 						</select>
 
 						<select name="month" id="month" class="form-control form-control-sm" required>
-							<option value="">Select Month...</option>
+							<option value="">Periode Usage...</option>
 							<option value="01">JANUARY</option>
 							<option value="02">FEBRUARY</option>
 							<option value="03">MARCH</option>
@@ -292,13 +292,36 @@ $(document).ready(function()
 							// sample custom headers
 							// headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
 							map: function(raw) {
-								// sample data mapping
-								var dataSet = raw;
-								if (typeof raw.data !== 'undefined') {
+								var dataSet = []; // Inisialisasi default array kosong
+								
+								// 1. Validasi apakah objek response 'raw' dan 'raw.meta' ada
+								if (raw && raw.meta) {
+									
+									// 2. Cek apakah ada flag data_too_large: true dari Laravel
+									if (raw.meta.data_too_large === true) {
+										// Ubah teks pesan kosong internal KTDatatable secara dinamis
+										dataTable.setOption(
+											'translate.records.noRecords', 
+											'Data terlalu besar untuk ditampilkan, langsung download saja!'
+										);
+									} else {
+										// Jika data memang kosong biasa (bukan karena terlalu besar)
+										dataTable.setOption(
+											'translate.records.noRecords', 
+											'Data tidak ditemukan'
+										);
+									}
+								}
+								
+								// 3. Pastikan dataSet mengambil array dari 'raw.data' agar loading berhenti
+								if (raw && typeof raw.data !== 'undefined' && raw.data !== null) {
 									dataSet = raw.data;
 								}
-								return dataSet;
+								
+								// 4. CRITICAL: Wajib mengembalikan array (meskipun kosong [])
+								return dataSet; 
 							},
+							timeout: 60000,
 						},
 					},
 					//pageSize: 10,
@@ -307,21 +330,19 @@ $(document).ready(function()
 					serverSorting: false,
 				},
 
-				// layout definition
-				layout: {
-					scroll: true,
-					footer: false,
-					spinner: { 
-						overlayColor: '#fefefe',
-						opacity: 4,
-						type: 'loader',
-						message: 'Mohon tunggu sebentar sedang memproses data ...'
-					},
+				// Tambahkan block ini untuk menangani crash jaringan / server error 500
+				callbacks: {
+					onError: function(dataTable, jqXHR) {
+						console.error('KTDatatable Error:', jqXHR);
+						// Paksa text berubah jika server benar-benar crash 500
+						dataTable.setOption('translate.records.noRecords', 'Gagal memuat data dari server.');
+					}
 				},
 
 				// translate definition
 				translate: {
 					records: {
+						processing: 'Mohon tunggu sebentar sedang memproses data ...',
 						noRecords: 'Data tidak ada ...'
 					}
 				},

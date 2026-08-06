@@ -281,9 +281,9 @@ $(document).ready(function()
 						</button>\
 							<ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="bottom-start">\
 								<li style="font-size:9pt;>\
-									<a href="javascript:void(0)" class="dropdown-item viewUsage" data-id="'+row.customerno+'" title="View Usages">\
+									<a href="javascript:void(0)" class="dropdown-item viewUsage" data-id="'+row.customerno+';'+row.company_name+'" title="View Usages">\
 										<span class="svg-icon svg-icon-primary svg-icon-2x">\
-											<i class="flaticon-eye icon-md"></i>&nbsp;&nbsp;&nbsp;View Usages\
+											<i class="flaticon-coins icon-md"></i>&nbsp;&nbsp;&nbsp;View Usages\
 										</span>\
 									</a>\
 								</li>\

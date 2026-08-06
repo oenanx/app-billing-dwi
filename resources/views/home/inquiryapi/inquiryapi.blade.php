@@ -410,21 +410,21 @@ $(document).ready(function()
 								</button>\
 								<ul class="dropdown-menu dropdown-menu-right" role="menu" x-placement="bottom-start">\
 									<li style="font-size:9pt;>\
-										<a href="javascript:void(0)" class="dropdown-item viewBSPostpaid" data-id="'+row.id+'" title="View Billing Statement">\
+										<a href="javascript:void(0)" class="dropdown-item viewBSPostpaid" data-id="'+row.id+';'+row.company_name+'" title="View Billing Statement">\
 											<span class="svg-icon svg-icon-primary svg-icon-2x">\
 												<i class="fa fa-tags icon-md"></i>&nbsp;&nbsp;&nbsp;View BS Postpaid\
 											</span>\
 										</a>\
 									</li>\
 									<li style="font-size:9pt;>\
-										<a href="javascript:void(0)" class="dropdown-item viewPayPostpaid" data-id="'+row.id+'" title="View Payment">\
+										<a href="javascript:void(0)" class="dropdown-item viewPayPostpaid" data-id="'+row.id+';'+row.company_name+'" title="View Payment">\
 											<span class="svg-icon svg-icon-primary svg-icon-2x">\
 												<i class="flaticon-coins icon-md"></i>&nbsp;&nbsp;&nbsp;View Payment Postpaid\
 											</span>\
 										</a>\
 									</li>\
 									<li style="font-size:9pt;>\
-										<a href="javascript:void(0)" class="dropdown-item viewUsagePostpaid" data-id="'+row.customerno+'" title="View Log Usage">\
+										<a href="javascript:void(0)" class="dropdown-item viewUsagePostpaid" data-id="'+row.customerno+';'+row.company_name+'" title="View Log Usage">\
 											<span class="svg-icon svg-icon-primary svg-icon-2x">\
 												<i class="flaticon-eye icon-md"></i>&nbsp;&nbsp;&nbsp;View Log Usage\
 											</span>\
@@ -449,10 +449,13 @@ $(document).ready(function()
 
 $('body').on('click', '.viewBSPostpaid', function(e)
 {
-	var id = $(this).data("id");
+	var teksAsli = $(this).data("id");
+	var id = teksAsli.split(';')[0];
+	var nama = teksAsli.split(';')[1];
+	//var id = $(this).data("id");
 	$('.help-block').empty(); // clear error string
 	$('.modal-dialog').css({'width':'100%', 'max-width':'95%', 'height':'auto', 'max-height':'100%', 'padding':'auto', 'margin':'auto'});
-	$('#modelHeading1').html("View Billing Statement Postpaid");
+	$('#modelHeading1').html("View Billing Statement Postpaid : "+nama);
 
 	/*
 	var dataTableBS = $('#Show-TablesBSPostpaid').KTDatatable(
@@ -582,10 +585,13 @@ $('body').on('click', '.viewBSPostpaid', function(e)
 
 $('body').on('click', '.viewPayPostpaid', function(e)
 {
-	var id = $(this).data('id');
+	var teksAsli = $(this).data("id");
+	var id = teksAsli.split(';')[0];
+	var nama = teksAsli.split(';')[1];
+	//var id = $(this).data('id');
 	$('.help-block').empty(); // clear error string
 	$('.modal-dialog').css({'width':'100%', 'max-width':'95%', 'height':'auto', 'max-height':'100%', 'padding':'auto', 'margin':'auto'});
-	$('#modelHeading2').html("View Payment History Postpaid");
+	$('#modelHeading2').html("View Payment History Postpaid : "+nama);
 
 	var dataTablePay = $('#kt_datatablePay').KTDatatable(
 	{
@@ -673,10 +679,13 @@ $('body').on('click', '.viewPayPostpaid', function(e)
 
 $('body').on('click', '.viewBSPrepaid', function(e)
 {
-	var id = $(this).data("id");
+	var teksAsli = $(this).data("id");
+	var id = teksAsli.split(';')[0];
+	var nama = teksAsli.split(';')[1];
+	//var id = $(this).data("id");
 	$('.help-block').empty(); // clear error string
 	$('.modal-dialog').css({'width':'100%', 'max-width':'95%', 'height':'auto', 'max-height':'100%', 'padding':'auto', 'margin':'auto'});
-	$('#modelHeading3').html("View Billing Statement Prepaid");
+	$('#modelHeading3').html("View Billing Statement Prepaid : "+nama);
 	
 	/*
 	var dataTableBS = $('#Show-TablesBSPrepaid').KTDatatable(

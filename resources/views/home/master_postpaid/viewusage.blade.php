@@ -36,7 +36,7 @@
 <div class="card card-custom" data-card="true" id="kt_card_1">
 	<div class="card-header">
 		<div class="card-title">
-			<h3 class="card-label"><i class="flaticon-eye icon-md"></i> View Usage API Product Postpaid</h3>
+			<h3 class="card-label"><i class="flaticon-coins icon-md"></i> View Usage API Product Postpaid : {{ $cname; }}</h3>
 		</div>
 		<div class="card-toolbar">
             <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top" data-original-title="Toggle Card">
